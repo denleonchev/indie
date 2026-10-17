@@ -1,0 +1,8 @@
+{
+  "name": "indie",
+  "private": true,
+  "devDependencies": {
+    "deno": "2.9.6",
+    "supabase": "2.121.0"
+  }
+}

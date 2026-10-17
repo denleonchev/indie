@@ -1,0 +1,5 @@
+node_modules/
+
+# Local env files; the matching .env.example files are committed
+.env
+.env.local
