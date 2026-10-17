@@ -37,12 +37,13 @@ Postgres. See [docs/adr/01-stack.md](docs/adr/01-stack.md) for why.
 
 ## Running it
 
-Requires the Supabase CLI and Node 20+.
+Requires Docker and Node 20+.
 
 ```bash
-supabase start                 # local stack
-supabase db reset              # apply migrations
-supabase functions serve       # run functions locally
+npm install                    # Supabase CLI and Deno, pinned
+npx supabase start             # local stack
+npx supabase db reset          # apply migrations
+npx supabase functions serve   # run functions locally
 
 cd web && npm install && npm run dev
 ```
@@ -66,8 +67,8 @@ exposed to the browser.
 ## Deploying
 
 ```bash
-supabase db push
-supabase functions deploy
+npx supabase db push
+npx supabase functions deploy
 ```
 
 The interface deploys to Vercel from the `web` directory.
