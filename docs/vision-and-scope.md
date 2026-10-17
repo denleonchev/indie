@@ -7,7 +7,7 @@ The service reads ERC-20 transfers from the chain and shows each wallet owner th
 | Actor              | Who it is                           | How it reaches the database        |
 | ------------------ | ----------------------------------- | ---------------------------------- |
 | Wallet owner       | a person signed in with a signature | publishable key, under policies    |
-| Indexer tick       | a function on a schedule            | secret key, bypasses policies      |
+| Indexer            | a function on a schedule            | secret key, bypasses policies      |
 | Queue worker       | a function that handles messages    | secret key, bypasses policies      |
 | Public entry point | export and notifications            | by task: user token or service key |
 
@@ -54,7 +54,7 @@ Each one is written so that it can fail a check. Otherwise it is a wish, not a r
 | Data integrity | NFR-1  | Running the same work twice changes nothing    | run twice on one range, the row count stays the same                 |
 | Data integrity | NFR-2  | A stop at any moment leaves no gaps            | break the catch-up, start again, compare the block range             |
 | Data integrity | NFR-3  | Position and data move together                | records and the new position are written in one database transaction |
-| Data integrity | NFR-4  | Parallel runs do not break the position        | start two ticks at once, the second one backs off on the lock        |
+| Data integrity | NFR-4  | Parallel runs do not break the position        | start two passes at once, the second one backs off on the lock       |
 | Data integrity | NFR-5  | Records match the chain after a reorg          | change a block hash by hand, see the rollback                        |
 | Access control | NFR-6  | A client cannot read other people's data       | a second wallet in another browser gets an empty list                |
 | Access control | NFR-7  | A client cannot call service operations        | a call to the service procedure from the browser is rejected         |
