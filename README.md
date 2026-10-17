@@ -42,7 +42,7 @@ Requires the Supabase CLI and Node 20+.
 ```bash
 supabase start                 # local stack
 supabase db reset              # apply migrations
-supabase functions serve tick  # run a pass locally
+supabase functions serve       # run functions locally
 
 cd web && npm install && npm run dev
 ```
@@ -67,7 +67,7 @@ exposed to the browser.
 
 ```bash
 supabase db push
-supabase functions deploy tick
+supabase functions deploy
 ```
 
 The interface deploys to Vercel from the `web` directory.
@@ -75,7 +75,7 @@ The interface deploys to Vercel from the `web` directory.
 ## Layout
 
 ```
-supabase/functions/   tick, export, _shared
+supabase/functions/   indexer, worker, api, _shared
 supabase/migrations/  schema and policies
 web/                  interface
 docs/adr/             decisions
