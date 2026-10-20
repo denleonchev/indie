@@ -42,7 +42,7 @@ Requires Docker and Node 20+.
 ```bash
 npm install                    # Supabase CLI and Deno, pinned
 npx supabase start             # local stack
-npx supabase db reset          # apply migrations
+npm run db:reset               # apply migrations, fill local Vault
 npx supabase functions serve   # run functions locally
 
 cd web && npm install && npm run dev
