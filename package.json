@@ -1,6 +1,10 @@
 {
   "name": "indie",
   "private": true,
+  "scripts": {
+    "db:reset": "supabase db reset && npm run db:seed:vault",
+    "db:seed:vault": "deno run --env-file=supabase/functions/.env --allow-env --allow-net=127.0.0.1:54322 scripts/seed-vault.ts"
+  },
   "devDependencies": {
     "deno": "2.9.6",
     "supabase": "2.121.0"
