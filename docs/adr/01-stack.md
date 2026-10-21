@@ -75,3 +75,10 @@ users.
 - **Configuration is split by consumer.** Functions read
   `supabase/functions/.env`, the interface reads `web/.env.local`, so server
   secrets never sit next to values that reach the browser.
+
+## Deploy
+
+- **Code deploys from `main`** through the Supabase GitHub integration. GitHub
+  keeps no keys or passwords.
+- **Secrets are set by hand** in each environment, in function secrets and in
+  Vault. Locally, `npm run db:reset` fills Vault from the functions `.env`.
