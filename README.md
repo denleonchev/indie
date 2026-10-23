@@ -3,8 +3,9 @@
 Reads ERC-20 transfers from an EVM chain and shows each wallet owner their own
 history.
 
-**Status: in progress.** Indexing and storage work. The dashboard, live
-updates and export are not built yet.
+**Status: in progress.** Every minute the indexer saves the newest block, and
+the web page shows it. Transfers, sign-in, live updates and export are not
+built yet.
 
 ## What it does
 
@@ -37,28 +38,25 @@ Postgres. See [docs/adr/01-stack.md](docs/adr/01-stack.md) for why.
 
 ## Running it
 
-Requires Docker and Node 20+.
+Requires Docker and Node 20.9+.
 
 ```bash
 npm install                    # Supabase CLI and Deno, pinned
+cp supabase/functions/.env.example supabase/functions/.env
+# set CRON_SECRET in it: openssl rand -hex 32
 npx supabase start             # local stack
 npm run db:reset               # apply migrations, fill local Vault
-npx supabase functions serve   # run functions locally
-
-cd web && npm install && npm run dev
+npx supabase functions serve   # run functions; cron calls the indexer
 ```
 
-Copy `.env.example` and fill it in:
+After a change to `CRON_SECRET`, run `npm run db:seed:vault` and restart
+`functions serve`.
 
-```
-RPC_URL=              # chain endpoint
-CHAIN_ID=
-TOKEN_ADDRESSES=      # comma separated
-CONFIRMATIONS=        # blocks before a record is final
-RANGE_SIZE=           # blocks per pass
-
-NEXT_PUBLIC_SUPABASE_URL=
-NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=
+```bash
+cd web
+npm install
+cp .env.example .env.local     # add the publishable key from `npx supabase status`
+npm run dev
 ```
 
 No chain address, endpoint or key belongs in code. Secret keys are never
@@ -66,12 +64,22 @@ exposed to the browser.
 
 ## Deploying
 
+Pushes to `main` deploy migrations and functions through the Supabase GitHub
+integration, and the interface through Vercel from the `web` directory.
+
+Secrets are set by hand, once per environment:
+
 ```bash
-npx supabase db push
-npx supabase functions deploy
+npx supabase secrets set CRON_SECRET=... CHAIN_ID=... RPC_URL=...
 ```
 
-The interface deploys to Vercel from the `web` directory.
+```sql
+select vault.create_secret('https://<project-ref>.supabase.co', 'project_url');
+select vault.create_secret('<the same CRON_SECRET>', 'cron_secret');
+```
+
+In Vercel, set `NEXT_PUBLIC_SUPABASE_URL` and
+`NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`.
 
 ## Layout
 
