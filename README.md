@@ -1,7 +1,7 @@
 # Wallet activity
 
-Reads ERC-20 transfers from an EVM chain and shows each wallet owner their own
-history.
+Reads ERC-20 transfers from an EVM chain. Anyone can see the latest transfers,
+and each wallet owner can see their own.
 
 **Status: in progress.** Every minute the indexer saves the newest block, and
 the web page shows it. Transfers, sign-in, live updates and export are not
@@ -10,15 +10,16 @@ built yet.
 ## What it does
 
 A pass runs on a schedule, reads a range of blocks, decodes `Transfer` events
-and stores them. It keeps its position in the database, so it can stop at any
-point and continue later without gaps or duplicates. Records near the head of
+and stores them for the last 30 days. It keeps its position in the database,
+so it can stop at any point and continue later without gaps or duplicates. Records near the head of
 the chain are not final until enough confirmations pass, and a replaced branch
 is rolled back.
 
-You sign in with a wallet signature. The address travels in your token, and
-row-level policies in the database compare it against each row, so a client can
-only read its own transfers. The interface talks to the database directly; there
-is no API layer in between.
+Transfers are public, as they are on the chain. You sign in with a wallet
+signature to see your own transfers and exports. The address travels in your
+token, and row-level policies in the database compare it against each row, so a
+client can only read its own exports. The interface talks to the database
+directly; there is no API layer in between.
 
 ## Stack
 
@@ -93,6 +94,7 @@ docs/adr/             decisions
 ## Limits
 
 - The native coin is not tracked: ETH transfers emit no log events
+- History covers the last 30 days, not the whole life of a token
 - One network at a time; network and contracts come from configuration
 - The service never writes to the chain, and holds no private keys
 
@@ -100,3 +102,4 @@ docs/adr/             decisions
 
 - [Vision and scope](docs/vision-and-scope.md)
 - [01. Stack](docs/adr/01-stack.md)
+- [02. History window](docs/adr/02-history-window.md)
