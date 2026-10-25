@@ -37,6 +37,34 @@ export type Database = {
                   Relationships: [
                     
                   ]
+                },"settings": {
+                  Row: {
+                    "id": boolean,"retention_days": number
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "id"?: boolean,"retention_days": number
+                  }
+                  Update: {
+                    "id"?: boolean,"retention_days"?: number
+                  }
+                  Relationships: [
+                    
+                  ]
+                },"tokens": {
+                  Row: {
+                    "address": string,"chain_id": number,"decimals": number,"symbol": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "address": string,"chain_id": number,"decimals": number,"symbol": string
+                  }
+                  Update: {
+                    "address"?: string,"chain_id"?: number,"decimals"?: number,"symbol"?: string
+                  }
+                  Relationships: [
+                    
+                  ]
                 }
           }
           Views: {
