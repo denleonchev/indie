@@ -65,6 +65,26 @@ export type Database = {
                   Relationships: [
                     
                   ]
+                },"transfers": {
+                  Row: {
+                    "amount": number,"block_hash": string,"block_number": number,"block_time": string,"chain_id": number,"from_address": string,"log_index": number,"to_address": string,"token": string,"tx_hash": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "amount": number,"block_hash": string,"block_number": number,"block_time": string,"chain_id": number,"from_address": string,"log_index": number,"to_address": string,"token": string,"tx_hash": string
+                  }
+                  Update: {
+                    "amount"?: number,"block_hash"?: string,"block_number"?: number,"block_time"?: string,"chain_id"?: number,"from_address"?: string,"log_index"?: number,"to_address"?: string,"token"?: string,"tx_hash"?: string
+                  }
+                  Relationships: [
+                    {
+      foreignKeyName: "transfers_chain_id_token_fkey"
+      columns: ["chain_id","token"]
+isOneToOne: false
+      referencedRelation: "tokens"
+      referencedColumns: ["chain_id","address"]
+    }
+                  ]
                 }
           }
           Views: {
