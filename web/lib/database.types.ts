@@ -25,14 +25,14 @@ export type Database = {
           Tables: {
             "indexer_state": {
                   Row: {
-                    "chain_id": number,"head_block": number,"head_block_at": string,"updated_at": string
+                    "chain_id": number,"last_block": number,"last_block_at": string,"lease_until": string | null,"updated_at": string
                   }
                   ComputedFields: never
                   Insert: {
-                    "chain_id": number,"head_block": number,"head_block_at": string,"updated_at"?: string
+                    "chain_id": number,"last_block": number,"last_block_at": string,"lease_until"?: string | null,"updated_at"?: string
                   }
                   Update: {
-                    "chain_id"?: number,"head_block"?: number,"head_block_at"?: string,"updated_at"?: string
+                    "chain_id"?: number,"last_block"?: number,"last_block_at"?: string,"lease_until"?: string | null,"updated_at"?: string
                   }
                   Relationships: [
                     
@@ -91,7 +91,9 @@ isOneToOne: false
             [_ in never]: never
           }
           Functions: {
-            [_ in never]: never
+            "save_pass":
+{ Args: { "p_chain_id": number,"p_from_block": number,"p_to_block": number,"p_to_block_at": string,"p_transfers": Json }; Returns: undefined
+                           }
           }
           Enums: {
             [_ in never]: never
