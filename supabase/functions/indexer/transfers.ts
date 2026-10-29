@@ -6,7 +6,7 @@ const transferEvent = parseAbiItem(
   "event Transfer(address indexed from, address indexed to, uint256 value)",
 );
 
-export async function readTransfers(
+export async function indexTransfers(
   store: Store,
   rpcClient: PublicClient,
   { tokenAddresses, rangeSize, passSoftLimitMs, maxTransfersPerPass }: Config,
