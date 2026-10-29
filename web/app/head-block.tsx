@@ -8,7 +8,7 @@ export default async function HeadBlock() {
   );
   const { data, error } = await supabase
     .from("indexer_state")
-    .select("head_block, updated_at")
+    .select("last_block, last_block_at")
     .maybeSingle();
   if (error) {
     console.error(error);
@@ -19,7 +19,7 @@ export default async function HeadBlock() {
   }
   return (
     <span>
-      {data.head_block} at {data.updated_at}
+      {data.last_block} at {data.last_block_at}
     </span>
   );
 }
