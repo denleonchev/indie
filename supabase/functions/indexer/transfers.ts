@@ -1,28 +1,23 @@
 import { parseAbiItem, type PublicClient } from "viem";
-import type { createAdminClient } from "../_shared/db.ts";
 import type { Config } from "./config.ts";
+import type { Store, TransferRow } from "./store.ts";
 
 const transferEvent = parseAbiItem(
   "event Transfer(address indexed from, address indexed to, uint256 value)",
 );
 
 export async function readTransfers(
-  db: ReturnType<typeof createAdminClient>,
+  store: Store,
   rpcClient: PublicClient,
-  { chainId, tokenAddresses, rangeSize, passSoftLimitMs, maxTransfersPerPass }:
-    Config,
+  { tokenAddresses, rangeSize, passSoftLimitMs, maxTransfersPerPass }: Config,
 ) {
   const startedAt = Date.now();
 
-  const { data: state, error } = await db
-    .from("indexer_state")
-    .select("last_block")
-    .eq("chain_id", chainId)
-    .single();
-  if (error) throw new Error(`indexer_state select failed: ${error.message}`);
+  const startBlock = await store.findLastBlock();
+  if (startBlock === null) throw new Error("No indexer position yet");
 
   const head = Number(await rpcClient.getBlockNumber());
-  let lastBlock = state.last_block;
+  let lastBlock = startBlock;
   let transferCount = 0;
   const firstBlock = lastBlock + 1;
 
@@ -45,7 +40,7 @@ export async function readTransfers(
       rpcClient.getBlock({ blockNumber: BigInt(toBlock) }),
     ]);
 
-    const rows = logs.map((log) => ({
+    const rows: TransferRow[] = logs.map((log) => ({
       tx_hash: log.transactionHash,
       log_index: log.logIndex,
       token: log.address.toLowerCase(),
@@ -57,14 +52,12 @@ export async function readTransfers(
       block_time: new Date(Number(log.blockTimestamp) * 1000).toISOString(),
     }));
 
-    const { error } = await db.rpc("save_pass", {
-      p_chain_id: chainId,
-      p_from_block: fromBlock,
-      p_to_block: toBlock,
-      p_to_block_at: new Date(Number(block.timestamp) * 1000).toISOString(),
-      p_transfers: rows,
-    });
-    if (error) throw new Error(`save_pass failed: ${error.message}`);
+    await store.savePass(
+      fromBlock,
+      toBlock,
+      new Date(Number(block.timestamp) * 1000).toISOString(),
+      rows,
+    );
 
     lastBlock = toBlock;
     transferCount += rows.length;

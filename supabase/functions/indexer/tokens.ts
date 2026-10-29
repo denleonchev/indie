@@ -5,7 +5,7 @@ import {
   erc20Abi,
   type PublicClient,
 } from "viem";
-import type { createAdminClient } from "../_shared/db.ts";
+import type { Store } from "./store.ts";
 
 export async function fetchTokenMetadata(
   rpcClient: PublicClient,
@@ -36,25 +36,14 @@ export async function fetchTokenMetadata(
 }
 
 export async function ensureTokens(
-  db: ReturnType<typeof createAdminClient>,
+  store: Store,
   rpcClient: PublicClient,
-  chainId: number,
   addresses: Address[],
 ) {
-  const { data: known, error } = await db
-    .from("tokens")
-    .select("address")
-    .eq("chain_id", chainId)
-    .in("address", addresses);
-  if (error) throw new Error(`tokens select failed: ${error.message}`);
-
-  const knownAddresses = new Set(known.map((token) => token.address));
+  const known = await store.findKnownTokens(addresses);
   for (const address of addresses) {
-    if (knownAddresses.has(address)) continue;
+    if (known.has(address)) continue;
     const { symbol, decimals } = await fetchTokenMetadata(rpcClient, address);
-    const { error } = await db
-      .from("tokens")
-      .insert({ chain_id: chainId, address, symbol, decimals });
-    if (error) throw new Error(`tokens insert failed: ${error.message}`);
+    await store.addToken(address, symbol, decimals);
   }
 }
