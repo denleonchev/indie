@@ -10,7 +10,7 @@ built yet.
 ## What it does
 
 A pass runs on a schedule, reads a range of blocks, decodes `Transfer` events
-and stores them for the last 30 days. It keeps its position in the database,
+and stores them for the last 14 days. It keeps its position in the database,
 so it can stop at any point and continue later without gaps or duplicates. Records near the head of
 the chain are not final until enough confirmations pass, and a replaced branch
 is rolled back.
@@ -94,7 +94,7 @@ docs/adr/             decisions
 ## Limits
 
 - The native coin is not tracked: ETH transfers emit no log events
-- History covers the last 30 days, not the whole life of a token
+- History covers the last 14 days, not the whole life of a token
 - One network at a time; network and contracts come from configuration
 - The service never writes to the chain, and holds no private keys
 

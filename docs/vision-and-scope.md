@@ -16,7 +16,7 @@ Main scenarios:
 
 1. **Feed.** A visitor opens the site without signing in. They see the latest transfers of the listed tokens and how far the indexer is behind the chain.
 2. **Sign-in.** The user signs a message with their wallet. They get a session, and the wallet address goes into the token.
-3. **History.** The user opens the list of their own transfers from the last 30 days. Each row shows the amount, the date and a link to the explorer.
+3. **History.** The user opens the list of their own transfers from the last 14 days. Each row shows the amount, the date and a link to the explorer.
 4. **Live transfer.** While the page is open, a new transfer appears by itself. The user does not reload the page.
 5. **Export.** The user asks for their history over a period. They get a link to a CSV file, and the link expires.
 6. **Catch-up.** The service was off for a day. On start it reads what it missed and creates no duplicates.

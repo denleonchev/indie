@@ -4,20 +4,20 @@
 
 The indexer reads every `Transfer` of the listed tokens, so the stored data
 grows with the activity of all holders, not only of our users. USDC on Sepolia
-makes about 16,000 transfers a day. At about 400 bytes a row with indexes, that
-is about 180 MB a month. The free database plan holds 500 MB.
+makes about 20,000 transfers a day. A stored row takes about 490 bytes with
+indexes, so 30 days take about 300 MB. The free database plan holds 500 MB.
 
-Reading a token from the day it was created does not fit, and the free public
-node keeps logs for only one or two days.
+Reading a token from the day it was created does not fit. Free public nodes
+differ in how far back they keep logs, and some keep only one or two days.
 
 ## Options
 
 **A. Full history of each token.** Every wallet sees its whole history. Costs a
 database that grows without limit and a node that keeps all logs.
 
-**B. A window of recent days.** Start at the current block and keep the last N
-days. The size stays flat, and any node can follow the head of the chain.
-Costs: a wallet sees only recent history.
+**B. A window of recent days.** Start N days back, read forward and keep the
+last N days. The size stays flat. Costs: a wallet sees only recent history, and
+the node must keep logs for N days.
 
 **C. Index by wallet.** Read only the transfers of signed-in wallets, with a
 backfill for each new one. The size grows with our users only. Costs a sign-in
@@ -26,7 +26,7 @@ node that keeps all logs.
 
 ## Decision
 
-Option B, with a window of 30 days.
+Option B, with a window of 14 days: about 140 MB, with room for bursts.
 
 - **The window lives in a settings table,** so a change needs no migration or
   deploy.
