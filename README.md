@@ -103,3 +103,4 @@ docs/adr/             decisions
 - [Vision and scope](docs/vision-and-scope.md)
 - [01. Stack](docs/adr/01-stack.md)
 - [02. History window](docs/adr/02-history-window.md)
+- [03. Wallet address of a signed-in user](docs/adr/03-wallet-address.md)
