@@ -1,8 +1,9 @@
-import { createPublicClient } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase/server";
 import { formatAmount, shortAddress, timeAgo } from "@/lib/format";
 
 export default async function TransferFeed() {
-  const { data, error } = await createPublicClient()
+  const supabase = await createClient();
+  const { data, error } = await supabase
     .from("transfers")
     .select("tx_hash, log_index, from_address, to_address, amount::text, block_time, tokens(symbol, decimals)")
     .order("block_time", { ascending: false })

@@ -1,8 +1,9 @@
-import { createPublicClient } from "@/lib/supabase";
+import { createClient } from "@/lib/supabase/server";
 import { timeAgo } from "@/lib/format";
 
 export default async function IndexerStatus() {
-  const { data, error } = await createPublicClient()
+  const supabase = await createClient();
+  const { data, error } = await supabase
     .from("indexer_state")
     .select("last_block, last_block_at")
     .maybeSingle();
