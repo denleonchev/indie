@@ -5,6 +5,7 @@ const nextConfig: NextConfig = {
   /* config options here */
   cacheComponents: true,
   partialPrefetching: true,
+  agentRules: false,
   turbopack: {
     root: path.join(__dirname, ".."),
     rules: {
