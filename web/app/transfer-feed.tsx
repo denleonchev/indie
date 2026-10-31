@@ -1,8 +1,8 @@
-import { createClient } from "@/lib/supabase/server";
+import { createClient } from "@/lib/supabase/public";
 import { formatAmount, shortAddress, timeAgo } from "@/lib/format";
 
 export default async function TransferFeed() {
-  const supabase = await createClient();
+  const supabase = createClient();
   const { data, error } = await supabase
     .from("transfers")
     .select("tx_hash, log_index, from_address, to_address, amount::text, block_time, tokens(symbol, decimals)")
