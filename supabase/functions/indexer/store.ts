@@ -24,9 +24,9 @@ export interface Store {
   takeLease(leaseUntil: string, now: string): Promise<boolean>;
   releaseLease(leaseUntil: string): Promise<void>;
   saveIndexedRange(
-    fromBlock: number,
-    toBlock: number,
-    toBlockAt: string,
+    fromBlockNumber: number,
+    toBlockNumber: number,
+    toBlockTime: string,
     transfers: TransferRow[],
   ): Promise<void>;
 }
@@ -112,16 +112,16 @@ export function createStore(
     },
 
     async saveIndexedRange(
-      fromBlock: number,
-      toBlock: number,
-      toBlockAt: string,
+      fromBlockNumber: number,
+      toBlockNumber: number,
+      toBlockTime: string,
       transfers: TransferRow[],
     ) {
       const { error } = await db.rpc("save_indexed_range", {
         p_chain_id: chainId,
-        p_from_block: fromBlock,
-        p_to_block: toBlock,
-        p_to_block_at: toBlockAt,
+        p_from_block: fromBlockNumber,
+        p_to_block: toBlockNumber,
+        p_to_block_at: toBlockTime,
         p_transfers: transfers,
       });
       if (error) throw new Error(`save_indexed_range failed: ${error.message}`);
