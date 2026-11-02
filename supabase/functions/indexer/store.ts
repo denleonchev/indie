@@ -32,6 +32,14 @@ export interface Store {
     toBlockHash: string,
     transfers: TransferRow[],
   ): Promise<void>;
+  syncUnfinalizedRange(
+    finalizedBlockNumber: number,
+    lastIndexedBlockNumber: number,
+    storedBlockHash: string,
+    chainBlockHash: string,
+    chainBlockTime: string,
+    transfers: TransferRow[],
+  ): Promise<{ deletedCount: number; insertedCount: number }>;
 }
 
 export function createStore(
@@ -144,6 +152,34 @@ export function createStore(
         p_transfers: transfers,
       });
       if (error) throw new Error(`save_indexed_range failed: ${error.message}`);
+    },
+
+    async syncUnfinalizedRange(
+      finalizedBlockNumber: number,
+      lastIndexedBlockNumber: number,
+      storedBlockHash: string,
+      chainBlockHash: string,
+      chainBlockTime: string,
+      transfers: TransferRow[],
+    ) {
+      const { data, error } = await db
+        .rpc("sync_unfinalized_range", {
+          p_chain_id: chainId,
+          p_finalized_block: finalizedBlockNumber,
+          p_last_block: lastIndexedBlockNumber,
+          p_old_block_hash: storedBlockHash,
+          p_new_block_hash: chainBlockHash,
+          p_new_block_at: chainBlockTime,
+          p_transfers: transfers,
+        })
+        .single();
+      if (error) {
+        throw new Error(`sync_unfinalized_range failed: ${error.message}`);
+      }
+      return {
+        deletedCount: data.deleted_count,
+        insertedCount: data.inserted_count,
+      };
     },
   };
 }
