@@ -13,11 +13,13 @@ export async function indexTransfers(
 ) {
   const startedAt = Date.now();
 
-  const startBlock = await store.findLastBlock();
-  if (startBlock === null) throw new Error("No indexer position yet");
+  const lastIndexedBlockNumber = await store.findLastIndexedBlockNumber();
+  if (lastIndexedBlockNumber === null) {
+    throw new Error("No indexer position yet");
+  }
 
   const head = Number(await rpcClient.getBlockNumber());
-  let lastBlock = startBlock;
+  let lastBlock = lastIndexedBlockNumber;
   let transferCount = 0;
   const firstBlock = lastBlock + 1;
 

@@ -7,7 +7,7 @@ export async function ensureStartPosition(
   store: Store,
   rpcClient: PublicClient,
 ) {
-  if ((await store.findLastBlock()) !== null) return;
+  if ((await store.findLastIndexedBlockNumber()) !== null) return;
 
   const retentionDays = await store.findRetentionDays();
   const head = await rpcClient.getBlockNumber();

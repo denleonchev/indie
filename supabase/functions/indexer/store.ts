@@ -15,7 +15,7 @@ export type TransferRow = {
 export interface Store {
   findKnownTokens(addresses: string[]): Promise<Set<string>>;
   addToken(address: string, symbol: string, decimals: number): Promise<void>;
-  findLastBlock(): Promise<number | null>;
+  findLastIndexedBlockNumber(): Promise<number | null>;
   createPosition(lastBlock: number, lastBlockAt: string): Promise<void>;
   findRetentionDays(): Promise<number>;
   takeLease(leaseUntil: string, now: string): Promise<boolean>;
@@ -50,7 +50,7 @@ export function createStore(
       if (error) throw new Error(`tokens insert failed: ${error.message}`);
     },
 
-    async findLastBlock() {
+    async findLastIndexedBlockNumber() {
       const { data, error } = await db
         .from("indexer_state")
         .select("last_block")
