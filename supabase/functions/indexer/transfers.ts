@@ -11,7 +11,7 @@ export async function indexTransfers(
   rpcClient: PublicClient,
   { tokenAddresses, rangeSize, passSoftLimitMs, maxTransfersPerPass }: Config,
 ) {
-  const startedAt = Date.now();
+  const passStartedAt = Date.now();
 
   let lastIndexedBlockNumber = await store.findLastIndexedBlockNumber();
   if (lastIndexedBlockNumber === null) {
@@ -25,7 +25,7 @@ export async function indexTransfers(
   while (
     lastIndexedBlockNumber < headBlockNumber &&
     transferCount < maxTransfersPerPass &&
-    Date.now() - startedAt < passSoftLimitMs
+    Date.now() - passStartedAt < passSoftLimitMs
   ) {
     const fromBlock = lastIndexedBlockNumber + 1;
     const toBlock = Math.min(headBlockNumber, fromBlock + rangeSize - 1);
