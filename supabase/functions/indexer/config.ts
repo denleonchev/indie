@@ -1,10 +1,10 @@
 import { type Address, isAddress } from "viem";
 import { requireEnv } from "../_shared/env.ts";
 
-function requirePositiveInteger(name: string): number {
+function requireInteger(name: string, min: number): number {
   const value = Number(requireEnv(name));
-  if (!Number.isSafeInteger(value) || value <= 0) {
-    throw new Error(`${name} must be a positive integer`);
+  if (!Number.isSafeInteger(value) || value < min) {
+    throw new Error(`${name} must be an integer of at least ${min}`);
   }
   return value;
 }
@@ -20,12 +20,13 @@ export const getConfig = () => {
   }
 
   return {
-    chainId: requirePositiveInteger("CHAIN_ID"),
+    chainId: requireInteger("CHAIN_ID", 1),
     rpcUrl: requireEnv("RPC_URL"),
     tokenAddresses: tokenAddresses as Address[],
-    rangeSize: requirePositiveInteger("RANGE_SIZE"),
-    passSoftLimitMs: requirePositiveInteger("PASS_SOFT_LIMIT_MS"),
-    maxTransfersPerPass: requirePositiveInteger("MAX_TRANSFERS_PER_PASS"),
+    confirmations: requireInteger("CONFIRMATIONS", 0),
+    rangeSize: requireInteger("RANGE_SIZE", 1),
+    passSoftLimitMs: requireInteger("PASS_SOFT_LIMIT_MS", 1),
+    maxTransfersPerPass: requireInteger("MAX_TRANSFERS_PER_PASS", 1),
   };
 };
 

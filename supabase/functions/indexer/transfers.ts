@@ -9,7 +9,13 @@ const transferEvent = parseAbiItem(
 export async function indexTransfers(
   store: Store,
   rpcClient: PublicClient,
-  { tokenAddresses, rangeSize, passSoftLimitMs, maxTransfersPerPass }: Config,
+  {
+    tokenAddresses,
+    confirmations,
+    rangeSize,
+    passSoftLimitMs,
+    maxTransfersPerPass,
+  }: Config,
 ) {
   const passStartedAt = Date.now();
 
@@ -19,17 +25,18 @@ export async function indexTransfers(
   }
 
   const headBlockNumber = Number(await rpcClient.getBlockNumber());
+  const lastConfirmedBlockNumber = headBlockNumber - confirmations;
   let transferCount = 0;
   const firstBlockNumberToIndex = lastIndexedBlockNumber + 1;
 
   while (
-    lastIndexedBlockNumber < headBlockNumber &&
+    lastIndexedBlockNumber < lastConfirmedBlockNumber &&
     transferCount < maxTransfersPerPass &&
     Date.now() - passStartedAt < passSoftLimitMs
   ) {
     const fromBlockNumber = lastIndexedBlockNumber + 1;
     const toBlockNumber = Math.min(
-      headBlockNumber,
+      lastConfirmedBlockNumber,
       fromBlockNumber + rangeSize - 1,
     );
 
@@ -70,6 +77,7 @@ export async function indexTransfers(
   return {
     firstBlockNumberToIndex,
     lastIndexedBlockNumber,
+    lastConfirmedBlockNumber,
     headBlockNumber,
     transferCount,
   };
