@@ -11,33 +11,37 @@ export async function indexTransfers(
   rpcClient: PublicClient,
   { tokenAddresses, rangeSize, passSoftLimitMs, maxTransfersPerPass }: Config,
 ) {
-  const startedAt = Date.now();
+  const passStartedAt = Date.now();
 
-  const startBlock = await store.findLastBlock();
-  if (startBlock === null) throw new Error("No indexer position yet");
+  let lastIndexedBlockNumber = await store.findLastIndexedBlockNumber();
+  if (lastIndexedBlockNumber === null) {
+    throw new Error("No indexer position yet");
+  }
 
-  const head = Number(await rpcClient.getBlockNumber());
-  let lastBlock = startBlock;
+  const headBlockNumber = Number(await rpcClient.getBlockNumber());
   let transferCount = 0;
-  const firstBlock = lastBlock + 1;
+  const firstBlockNumberToIndex = lastIndexedBlockNumber + 1;
 
   while (
-    lastBlock < head &&
+    lastIndexedBlockNumber < headBlockNumber &&
     transferCount < maxTransfersPerPass &&
-    Date.now() - startedAt < passSoftLimitMs
+    Date.now() - passStartedAt < passSoftLimitMs
   ) {
-    const fromBlock = lastBlock + 1;
-    const toBlock = Math.min(head, fromBlock + rangeSize - 1);
+    const fromBlockNumber = lastIndexedBlockNumber + 1;
+    const toBlockNumber = Math.min(
+      headBlockNumber,
+      fromBlockNumber + rangeSize - 1,
+    );
 
     const [logs, block] = await Promise.all([
       rpcClient.getLogs({
         address: tokenAddresses,
         event: transferEvent,
-        fromBlock: BigInt(fromBlock),
-        toBlock: BigInt(toBlock),
+        fromBlock: BigInt(fromBlockNumber),
+        toBlock: BigInt(toBlockNumber),
         strict: true,
       }),
-      rpcClient.getBlock({ blockNumber: BigInt(toBlock) }),
+      rpcClient.getBlock({ blockNumber: BigInt(toBlockNumber) }),
     ]);
 
     const rows: TransferRow[] = logs.map((log) => ({
@@ -52,16 +56,21 @@ export async function indexTransfers(
       block_time: new Date(Number(log.blockTimestamp) * 1000).toISOString(),
     }));
 
-    await store.savePass(
-      fromBlock,
-      toBlock,
+    await store.saveIndexedRange(
+      fromBlockNumber,
+      toBlockNumber,
       new Date(Number(block.timestamp) * 1000).toISOString(),
       rows,
     );
 
-    lastBlock = toBlock;
+    lastIndexedBlockNumber = toBlockNumber;
     transferCount += rows.length;
   }
 
-  return { firstBlock, lastBlock, head, transferCount };
+  return {
+    firstBlockNumberToIndex,
+    lastIndexedBlockNumber,
+    headBlockNumber,
+    transferCount,
+  };
 }

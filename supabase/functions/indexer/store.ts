@@ -15,15 +15,18 @@ export type TransferRow = {
 export interface Store {
   findKnownTokens(addresses: string[]): Promise<Set<string>>;
   addToken(address: string, symbol: string, decimals: number): Promise<void>;
-  findLastBlock(): Promise<number | null>;
-  createPosition(lastBlock: number, lastBlockAt: string): Promise<void>;
+  findLastIndexedBlockNumber(): Promise<number | null>;
+  addIndexerState(
+    lastIndexedBlockNumber: number,
+    lastIndexedBlockTime: string,
+  ): Promise<void>;
   findRetentionDays(): Promise<number>;
   takeLease(leaseUntil: string, now: string): Promise<boolean>;
   releaseLease(leaseUntil: string): Promise<void>;
-  savePass(
-    fromBlock: number,
-    toBlock: number,
-    toBlockAt: string,
+  saveIndexedRange(
+    fromBlockNumber: number,
+    toBlockNumber: number,
+    toBlockTime: string,
     transfers: TransferRow[],
   ): Promise<void>;
 }
@@ -50,7 +53,7 @@ export function createStore(
       if (error) throw new Error(`tokens insert failed: ${error.message}`);
     },
 
-    async findLastBlock() {
+    async findLastIndexedBlockNumber() {
       const { data, error } = await db
         .from("indexer_state")
         .select("last_block")
@@ -62,12 +65,15 @@ export function createStore(
       return data?.last_block ?? null;
     },
 
-    async createPosition(lastBlock: number, lastBlockAt: string) {
+    async addIndexerState(
+      lastIndexedBlockNumber: number,
+      lastIndexedBlockTime: string,
+    ) {
       const { error } = await db.from("indexer_state").upsert(
         {
           chain_id: chainId,
-          last_block: lastBlock,
-          last_block_at: lastBlockAt,
+          last_block: lastIndexedBlockNumber,
+          last_block_at: lastIndexedBlockTime,
         },
         { onConflict: "chain_id", ignoreDuplicates: true },
       );
@@ -105,20 +111,20 @@ export function createStore(
       if (error) throw new Error(`lease release failed: ${error.message}`);
     },
 
-    async savePass(
-      fromBlock: number,
-      toBlock: number,
-      toBlockAt: string,
+    async saveIndexedRange(
+      fromBlockNumber: number,
+      toBlockNumber: number,
+      toBlockTime: string,
       transfers: TransferRow[],
     ) {
-      const { error } = await db.rpc("save_pass", {
+      const { error } = await db.rpc("save_indexed_range", {
         p_chain_id: chainId,
-        p_from_block: fromBlock,
-        p_to_block: toBlock,
-        p_to_block_at: toBlockAt,
+        p_from_block: fromBlockNumber,
+        p_to_block: toBlockNumber,
+        p_to_block_at: toBlockTime,
         p_transfers: transfers,
       });
-      if (error) throw new Error(`save_pass failed: ${error.message}`);
+      if (error) throw new Error(`save_indexed_range failed: ${error.message}`);
     },
   };
 }
