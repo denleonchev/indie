@@ -20,7 +20,7 @@ export async function indexTransfers(
 
   const headBlockNumber = Number(await rpcClient.getBlockNumber());
   let transferCount = 0;
-  const firstBlock = lastIndexedBlockNumber + 1;
+  const firstBlockNumberToIndex = lastIndexedBlockNumber + 1;
 
   while (
     lastIndexedBlockNumber < headBlockNumber &&
@@ -65,7 +65,7 @@ export async function indexTransfers(
   }
 
   return {
-    firstBlock,
+    firstBlockNumberToIndex,
     lastIndexedBlockNumber,
     headBlockNumber,
     transferCount,
