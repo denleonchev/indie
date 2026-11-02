@@ -29,7 +29,7 @@ Deno.serve(async (req) => {
     await ensureTokens(store, rpcClient, config.tokenAddresses);
     const pass = await indexTransfers(store, rpcClient, config);
     console.log(
-      `Read blocks ${pass.firstBlockNumberToIndex}..${pass.lastIndexedBlockNumber} of ${pass.headBlockNumber}, ${pass.transferCount} transfers`,
+      `Read blocks ${pass.firstBlockNumberToIndex}..${pass.lastIndexedBlockNumber} of ${pass.lastConfirmedBlockNumber} confirmed (head ${pass.headBlockNumber}), ${pass.transferCount} transfers`,
     );
     return Response.json(pass);
   } finally {
