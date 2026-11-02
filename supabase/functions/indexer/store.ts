@@ -20,7 +20,7 @@ export interface Store {
   findRetentionDays(): Promise<number>;
   takeLease(leaseUntil: string, now: string): Promise<boolean>;
   releaseLease(leaseUntil: string): Promise<void>;
-  savePass(
+  saveIndexedRange(
     fromBlock: number,
     toBlock: number,
     toBlockAt: string,
@@ -105,20 +105,20 @@ export function createStore(
       if (error) throw new Error(`lease release failed: ${error.message}`);
     },
 
-    async savePass(
+    async saveIndexedRange(
       fromBlock: number,
       toBlock: number,
       toBlockAt: string,
       transfers: TransferRow[],
     ) {
-      const { error } = await db.rpc("save_pass", {
+      const { error } = await db.rpc("save_indexed_range", {
         p_chain_id: chainId,
         p_from_block: fromBlock,
         p_to_block: toBlock,
         p_to_block_at: toBlockAt,
         p_transfers: transfers,
       });
-      if (error) throw new Error(`save_pass failed: ${error.message}`);
+      if (error) throw new Error(`save_indexed_range failed: ${error.message}`);
     },
   };
 }

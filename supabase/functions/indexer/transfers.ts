@@ -53,7 +53,7 @@ export async function indexTransfers(
       block_time: new Date(Number(log.blockTimestamp) * 1000).toISOString(),
     }));
 
-    await store.savePass(
+    await store.saveIndexedRange(
       fromBlock,
       toBlock,
       new Date(Number(block.timestamp) * 1000).toISOString(),

@@ -91,7 +91,13 @@ isOneToOne: false
             [_ in never]: never
           }
           Functions: {
-            "save_pass":
+            "custom_access_token_hook":
+{ Args: { "event": Json }; Returns: Json
+                           },
+"save_indexed_range":
+{ Args: { "p_chain_id": number,"p_from_block": number,"p_to_block": number,"p_to_block_at": string,"p_transfers": Json }; Returns: undefined
+                           },
+"save_pass":
 { Args: { "p_chain_id": number,"p_from_block": number,"p_to_block": number,"p_to_block_at": string,"p_transfers": Json }; Returns: undefined
                            }
           }
