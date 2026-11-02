@@ -1,7 +1,7 @@
 import type { PublicClient } from "viem";
 import type { Store } from "./store.ts";
 
-const BLOCKS_PER_DAY = 7200n;
+const BLOCKS_PER_DAY = 7200;
 
 export async function ensureStartPosition(
   store: Store,
@@ -10,13 +10,16 @@ export async function ensureStartPosition(
   if ((await store.findLastIndexedBlockNumber()) !== null) return;
 
   const retentionDays = await store.findRetentionDays();
-  const headBlockNumber = await rpcClient.getBlockNumber();
-  const lastBlock = headBlockNumber - BigInt(retentionDays) * BLOCKS_PER_DAY;
-  const block = await rpcClient.getBlock({ blockNumber: lastBlock });
+  const headBlockNumber = Number(await rpcClient.getBlockNumber());
+  const lastIndexedBlockNumber = headBlockNumber -
+    retentionDays * BLOCKS_PER_DAY;
+  const block = await rpcClient.getBlock({
+    blockNumber: BigInt(lastIndexedBlockNumber),
+  });
 
   await store.addIndexerState(
-    Number(lastBlock),
+    lastIndexedBlockNumber,
     new Date(Number(block.timestamp) * 1000).toISOString(),
   );
-  console.log(`Start position: block ${lastBlock}`);
+  console.log(`Start position: block ${lastIndexedBlockNumber}`);
 }
