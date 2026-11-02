@@ -13,22 +13,21 @@ export async function indexTransfers(
 ) {
   const startedAt = Date.now();
 
-  const lastIndexedBlockNumber = await store.findLastIndexedBlockNumber();
+  let lastIndexedBlockNumber = await store.findLastIndexedBlockNumber();
   if (lastIndexedBlockNumber === null) {
     throw new Error("No indexer position yet");
   }
 
   const headBlockNumber = Number(await rpcClient.getBlockNumber());
-  let lastBlock = lastIndexedBlockNumber;
   let transferCount = 0;
-  const firstBlock = lastBlock + 1;
+  const firstBlock = lastIndexedBlockNumber + 1;
 
   while (
-    lastBlock < headBlockNumber &&
+    lastIndexedBlockNumber < headBlockNumber &&
     transferCount < maxTransfersPerPass &&
     Date.now() - startedAt < passSoftLimitMs
   ) {
-    const fromBlock = lastBlock + 1;
+    const fromBlock = lastIndexedBlockNumber + 1;
     const toBlock = Math.min(headBlockNumber, fromBlock + rangeSize - 1);
 
     const [logs, block] = await Promise.all([
@@ -61,9 +60,14 @@ export async function indexTransfers(
       rows,
     );
 
-    lastBlock = toBlock;
+    lastIndexedBlockNumber = toBlock;
     transferCount += rows.length;
   }
 
-  return { firstBlock, lastBlock, headBlockNumber, transferCount };
+  return {
+    firstBlock,
+    lastIndexedBlockNumber,
+    headBlockNumber,
+    transferCount,
+  };
 }
