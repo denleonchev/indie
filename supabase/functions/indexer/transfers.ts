@@ -27,18 +27,21 @@ export async function indexTransfers(
     transferCount < maxTransfersPerPass &&
     Date.now() - passStartedAt < passSoftLimitMs
   ) {
-    const fromBlock = lastIndexedBlockNumber + 1;
-    const toBlock = Math.min(headBlockNumber, fromBlock + rangeSize - 1);
+    const fromBlockNumber = lastIndexedBlockNumber + 1;
+    const toBlockNumber = Math.min(
+      headBlockNumber,
+      fromBlockNumber + rangeSize - 1,
+    );
 
     const [logs, block] = await Promise.all([
       rpcClient.getLogs({
         address: tokenAddresses,
         event: transferEvent,
-        fromBlock: BigInt(fromBlock),
-        toBlock: BigInt(toBlock),
+        fromBlock: BigInt(fromBlockNumber),
+        toBlock: BigInt(toBlockNumber),
         strict: true,
       }),
-      rpcClient.getBlock({ blockNumber: BigInt(toBlock) }),
+      rpcClient.getBlock({ blockNumber: BigInt(toBlockNumber) }),
     ]);
 
     const rows: TransferRow[] = logs.map((log) => ({
@@ -54,13 +57,13 @@ export async function indexTransfers(
     }));
 
     await store.saveIndexedRange(
-      fromBlock,
-      toBlock,
+      fromBlockNumber,
+      toBlockNumber,
       new Date(Number(block.timestamp) * 1000).toISOString(),
       rows,
     );
 
-    lastIndexedBlockNumber = toBlock;
+    lastIndexedBlockNumber = toBlockNumber;
     transferCount += rows.length;
   }
 
