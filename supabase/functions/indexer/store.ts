@@ -16,6 +16,7 @@ export interface Store {
   findKnownTokens(addresses: string[]): Promise<Set<string>>;
   addToken(address: string, symbol: string, decimals: number): Promise<void>;
   findLastIndexedBlockNumber(): Promise<number | null>;
+  findLastIndexedBlockHash(): Promise<string | null>;
   addIndexerState(
     lastIndexedBlockNumber: number,
     lastIndexedBlockTime: string,
@@ -65,6 +66,18 @@ export function createStore(
         throw new Error(`indexer_state select failed: ${error.message}`);
       }
       return data?.last_block ?? null;
+    },
+
+    async findLastIndexedBlockHash() {
+      const { data, error } = await db
+        .from("indexer_state")
+        .select("last_block_hash")
+        .eq("chain_id", chainId)
+        .maybeSingle();
+      if (error) {
+        throw new Error(`indexer_state select failed: ${error.message}`);
+      }
+      return data?.last_block_hash ?? null;
     },
 
     async addIndexerState(
