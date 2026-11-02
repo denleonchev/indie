@@ -96,6 +96,11 @@ isOneToOne: false
                            },
 "save_indexed_range":
 { Args: { "p_chain_id": number,"p_from_block": number,"p_to_block": number,"p_to_block_at": string,"p_to_block_hash"?: string,"p_transfers": Json }; Returns: undefined
+                           },
+"sync_unfinalized_range":
+{ Args: { "p_chain_id": number,"p_finalized_block": number,"p_last_block": number,"p_new_block_at": string,"p_new_block_hash": string,"p_old_block_hash": string,"p_transfers": Json }; Returns: {
+              "deleted_count": number,"inserted_count": number
+            }[]
                            }
           }
           Enums: {
