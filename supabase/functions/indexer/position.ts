@@ -10,8 +10,8 @@ export async function ensureStartPosition(
   if ((await store.findLastIndexedBlockNumber()) !== null) return;
 
   const retentionDays = await store.findRetentionDays();
-  const head = await rpcClient.getBlockNumber();
-  const lastBlock = head - BigInt(retentionDays) * BLOCKS_PER_DAY;
+  const headBlockNumber = await rpcClient.getBlockNumber();
+  const lastBlock = headBlockNumber - BigInt(retentionDays) * BLOCKS_PER_DAY;
   const block = await rpcClient.getBlock({ blockNumber: lastBlock });
 
   await store.createPosition(
