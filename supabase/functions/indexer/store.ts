@@ -16,7 +16,10 @@ export interface Store {
   findKnownTokens(addresses: string[]): Promise<Set<string>>;
   addToken(address: string, symbol: string, decimals: number): Promise<void>;
   findLastIndexedBlockNumber(): Promise<number | null>;
-  createPosition(lastBlock: number, lastBlockAt: string): Promise<void>;
+  addIndexerState(
+    lastIndexedBlockNumber: number,
+    lastIndexedBlockTime: string,
+  ): Promise<void>;
   findRetentionDays(): Promise<number>;
   takeLease(leaseUntil: string, now: string): Promise<boolean>;
   releaseLease(leaseUntil: string): Promise<void>;
@@ -62,12 +65,15 @@ export function createStore(
       return data?.last_block ?? null;
     },
 
-    async createPosition(lastBlock: number, lastBlockAt: string) {
+    async addIndexerState(
+      lastIndexedBlockNumber: number,
+      lastIndexedBlockTime: string,
+    ) {
       const { error } = await db.from("indexer_state").upsert(
         {
           chain_id: chainId,
-          last_block: lastBlock,
-          last_block_at: lastBlockAt,
+          last_block: lastIndexedBlockNumber,
+          last_block_at: lastIndexedBlockTime,
         },
         { onConflict: "chain_id", ignoreDuplicates: true },
       );
