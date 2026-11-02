@@ -19,6 +19,7 @@ export interface Store {
   addIndexerState(
     lastIndexedBlockNumber: number,
     lastIndexedBlockTime: string,
+    lastIndexedBlockHash: string,
   ): Promise<void>;
   findRetentionDays(): Promise<number>;
   takeLease(leaseUntil: string, now: string): Promise<boolean>;
@@ -27,6 +28,7 @@ export interface Store {
     fromBlockNumber: number,
     toBlockNumber: number,
     toBlockTime: string,
+    toBlockHash: string,
     transfers: TransferRow[],
   ): Promise<void>;
 }
@@ -68,12 +70,14 @@ export function createStore(
     async addIndexerState(
       lastIndexedBlockNumber: number,
       lastIndexedBlockTime: string,
+      lastIndexedBlockHash: string,
     ) {
       const { error } = await db.from("indexer_state").upsert(
         {
           chain_id: chainId,
           last_block: lastIndexedBlockNumber,
           last_block_at: lastIndexedBlockTime,
+          last_block_hash: lastIndexedBlockHash,
         },
         { onConflict: "chain_id", ignoreDuplicates: true },
       );
@@ -115,6 +119,7 @@ export function createStore(
       fromBlockNumber: number,
       toBlockNumber: number,
       toBlockTime: string,
+      toBlockHash: string,
       transfers: TransferRow[],
     ) {
       const { error } = await db.rpc("save_indexed_range", {
@@ -122,6 +127,7 @@ export function createStore(
         p_from_block: fromBlockNumber,
         p_to_block: toBlockNumber,
         p_to_block_at: toBlockTime,
+        p_to_block_hash: toBlockHash,
         p_transfers: transfers,
       });
       if (error) throw new Error(`save_indexed_range failed: ${error.message}`);

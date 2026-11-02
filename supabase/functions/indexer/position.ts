@@ -20,6 +20,7 @@ export async function ensureStartPosition(
   await store.addIndexerState(
     lastIndexedBlockNumber,
     new Date(Number(block.timestamp) * 1000).toISOString(),
+    block.hash,
   );
   console.log(`Start position: block ${lastIndexedBlockNumber}`);
 }
