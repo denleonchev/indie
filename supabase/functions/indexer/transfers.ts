@@ -67,6 +67,7 @@ export async function indexTransfers(
       fromBlockNumber,
       toBlockNumber,
       new Date(Number(block.timestamp) * 1000).toISOString(),
+      block.hash,
       rows,
     );
 

@@ -25,14 +25,14 @@ export type Database = {
           Tables: {
             "indexer_state": {
                   Row: {
-                    "chain_id": number,"last_block": number,"last_block_at": string,"lease_until": string | null,"updated_at": string
+                    "chain_id": number,"last_block": number,"last_block_at": string,"last_block_hash": string | null,"lease_until": string | null,"updated_at": string
                   }
                   ComputedFields: never
                   Insert: {
-                    "chain_id": number,"last_block": number,"last_block_at": string,"lease_until"?: string | null,"updated_at"?: string
+                    "chain_id": number,"last_block": number,"last_block_at": string,"last_block_hash"?: string | null,"lease_until"?: string | null,"updated_at"?: string
                   }
                   Update: {
-                    "chain_id"?: number,"last_block"?: number,"last_block_at"?: string,"lease_until"?: string | null,"updated_at"?: string
+                    "chain_id"?: number,"last_block"?: number,"last_block_at"?: string,"last_block_hash"?: string | null,"lease_until"?: string | null,"updated_at"?: string
                   }
                   Relationships: [
                     
@@ -95,7 +95,7 @@ isOneToOne: false
 { Args: { "event": Json }; Returns: Json
                            },
 "save_indexed_range":
-{ Args: { "p_chain_id": number,"p_from_block": number,"p_to_block": number,"p_to_block_at": string,"p_transfers": Json }; Returns: undefined
+{ Args: { "p_chain_id": number,"p_from_block": number,"p_to_block": number,"p_to_block_at": string,"p_to_block_hash"?: string,"p_transfers": Json }; Returns: undefined
                            }
           }
           Enums: {
