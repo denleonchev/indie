@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { getSignedInWallet } from "@/data/auth";
+import { getTokens, type Token } from "@/data/tokens";
 import { createClient } from "@/lib/supabase/server";
 import TransferList, { transferColumns } from "./transfer-list";
 
@@ -33,16 +34,15 @@ function FilterLink({ href, active, children }: { href: string; active: boolean;
 export default async function TransferFeed({ searchParams }: { searchParams: SearchParams }) {
   const params = await searchParams;
   const supabase = await createClient();
-  const [wallet, tokensResult] = await Promise.all([
-    getSignedInWallet(),
-    supabase.from("tokens").select("address, symbol").order("symbol"),
-  ]);
-  if (tokensResult.error) {
-    console.error(tokensResult.error);
+  let wallet: string | null;
+  let tokens: Token[];
+  try {
+    [wallet, tokens] = await Promise.all([getSignedInWallet(), getTokens()]);
+  } catch (error) {
+    console.error(error);
     return <p>Could not load the transfers</p>;
   }
 
-  const tokens = tokensResult.data;
   const mine = wallet !== null && single(params.wallet) === "me";
   const token = tokens.find(({ address }) => address === single(params.token));
 
