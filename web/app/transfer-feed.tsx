@@ -1,11 +1,10 @@
 import Link from "next/link";
+import { getSignedInWallet } from "@/data/auth";
 import { createClient } from "@/lib/supabase/server";
 import TransferList, { transferColumns } from "./transfer-list";
 
 type SearchParams = Promise<Record<string, string | string[] | undefined>>;
 type Filters = { mine: boolean; token?: string };
-
-const addressPattern = /^0x[0-9a-f]{40}$/;
 
 function single(value: string | string[] | undefined) {
   return typeof value === "string" ? value : undefined;
@@ -34,11 +33,8 @@ function FilterLink({ href, active, children }: { href: string; active: boolean;
 export default async function TransferFeed({ searchParams }: { searchParams: SearchParams }) {
   const params = await searchParams;
   const supabase = await createClient();
-  const [claimedWallet, tokensResult] = await Promise.all([
-    supabase.auth
-      .getClaims()
-      .then(({ data }) => data?.claims.wallet)
-      .catch(() => null),
+  const [wallet, tokensResult] = await Promise.all([
+    getSignedInWallet(),
     supabase.from("tokens").select("address, symbol").order("symbol"),
   ]);
   if (tokensResult.error) {
@@ -46,7 +42,6 @@ export default async function TransferFeed({ searchParams }: { searchParams: Sea
     return <p>Could not load the transfers</p>;
   }
 
-  const wallet = typeof claimedWallet === "string" && addressPattern.test(claimedWallet) ? claimedWallet : null;
   const tokens = tokensResult.data;
   const mine = wallet !== null && single(params.wallet) === "me";
   const token = tokens.find(({ address }) => address === single(params.token));
