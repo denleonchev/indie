@@ -1,4 +1,5 @@
 import { getSignedInWallet } from "@/data/auth";
+import { getRequestTime } from "@/data/request-time";
 import { getTokens, type Token } from "@/data/tokens";
 import { getTransfers, type Feed } from "@/data/transfers";
 import { readFeedFilters } from "@/lib/feed-url";
@@ -8,6 +9,7 @@ import TransferList from "./transfer-list";
 type SearchParams = Promise<Record<string, string | string[] | undefined>>;
 
 export default async function TransferFeed({ searchParams }: { searchParams: SearchParams }) {
+  const now = await getRequestTime();
   const filters = readFeedFilters(await searchParams);
   let signedInWallet: string | null;
   let tokens: Token[];
@@ -42,7 +44,11 @@ export default async function TransferFeed({ searchParams }: { searchParams: Sea
       {transfers.length === 0 ? (
         <p className="text-sm text-gray-500">{emptyText}</p>
       ) : (
-        <TransferList transfers={transfers} wallet={isOwnWalletFilterApplied ? (signedInWallet ?? undefined) : undefined} />
+        <TransferList
+          transfers={transfers}
+          wallet={isOwnWalletFilterApplied ? (signedInWallet ?? undefined) : undefined}
+          now={now}
+        />
       )}
     </div>
   );
