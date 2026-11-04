@@ -1,11 +1,13 @@
 import { Suspense } from "react";
 import Account from "./account";
 import IndexerStatus from "./indexer-status";
+import RefreshOnTransferChanges from "./refresh-on-transfer-changes";
 import TransferFeed from "./transfer-feed";
 
 export default function Home() {
   return (
     <main className="mx-auto max-w-3xl px-4 py-8">
+      <RefreshOnTransferChanges />
       <div className="mb-4">
         <Suspense fallback={null}>
           <Account />

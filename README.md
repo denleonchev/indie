@@ -33,6 +33,7 @@ directly; there is no API layer in between.
 | Chain access | viem                                       |
 | Auth         | Supabase Auth, wallet signature (EIP-4361) |
 | Interface    | Next.js on Vercel                          |
+| Live updates | Supabase Realtime Broadcast                |
 
 Nothing runs between passes. All state — position, queue, data — lives in
 Postgres. See [docs/adr/01-stack.md](docs/adr/01-stack.md) for why.
@@ -105,3 +106,4 @@ docs/adr/             decisions
 - [02. History window](docs/adr/02-history-window.md)
 - [03. Wallet address of a signed-in user](docs/adr/03-wallet-address.md)
 - [04. Reorg handling](docs/adr/04-reorg-handling.md)
+- [05. Live updates](docs/adr/05-live-updates.md)
