@@ -1,17 +1,5 @@
+import type { Transfer } from "@/data/transfers";
 import { formatAmount, shortAddress, timeAgo } from "@/lib/format";
-
-export const transferColumns =
-  "tx_hash, log_index, from_address, to_address, amount::text, block_time, tokens(symbol, decimals)";
-
-type Transfer = {
-  tx_hash: string;
-  log_index: number;
-  from_address: string;
-  to_address: string;
-  amount: string;
-  block_time: string;
-  tokens: { symbol: string; decimals: number };
-};
 
 export default function TransferList({ transfers, wallet }: { transfers: Transfer[]; wallet?: string }) {
   const explorerUrl = process.env.NEXT_PUBLIC_EXPLORER_URL;

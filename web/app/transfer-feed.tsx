@@ -1,19 +1,19 @@
 import Link from "next/link";
 import { getSignedInWallet } from "@/data/auth";
 import { getTokens, type Token } from "@/data/tokens";
-import { createClient } from "@/lib/supabase/server";
-import TransferList, { transferColumns } from "./transfer-list";
+import { getTransfers, type Feed } from "@/data/transfers";
+import TransferList from "./transfer-list";
 
 type SearchParams = Promise<Record<string, string | string[] | undefined>>;
-type Filters = { mine: boolean; token?: string };
+type Filters = { ownWallet: boolean; token?: string };
 
 function single(value: string | string[] | undefined) {
   return typeof value === "string" ? value : undefined;
 }
 
-function filterHref({ mine, token }: Filters) {
+function filterHref({ ownWallet, token }: Filters) {
   const params = new URLSearchParams();
-  if (mine) params.set("wallet", "me");
+  if (ownWallet) params.set("wallet", "me");
   if (token) params.set("token", token);
   const query = params.toString();
   return query ? `/?${query}` : "/";
@@ -33,36 +33,27 @@ function FilterLink({ href, active, children }: { href: string; active: boolean;
 
 export default async function TransferFeed({ searchParams }: { searchParams: SearchParams }) {
   const params = await searchParams;
-  const supabase = await createClient();
-  let wallet: string | null;
+  let signedInWallet: string | null;
   let tokens: Token[];
+  let feed: Feed;
   try {
-    [wallet, tokens] = await Promise.all([getSignedInWallet(), getTokens()]);
+    [signedInWallet, tokens, feed] = await Promise.all([
+      getSignedInWallet(),
+      getTokens(),
+      getTransfers({ ownWallet: single(params.wallet) === "me", token: single(params.token) }),
+    ]);
   } catch (error) {
     console.error(error);
     return <p>Could not load the transfers</p>;
   }
 
-  const mine = wallet !== null && single(params.wallet) === "me";
-  const token = tokens.find(({ address }) => address === single(params.token));
-
-  let query = supabase.from("transfers").select(transferColumns);
-  if (mine) query = query.or(`from_address.eq.${wallet},to_address.eq.${wallet}`);
-  if (token) query = query.eq("token", token.address);
-  const { data, error } = await query
-    .order("block_time", { ascending: false })
-    .order("log_index", { ascending: false })
-    .limit(50);
-  if (error) {
-    console.error(error);
-    return <p>Could not load the transfers</p>;
-  }
+  const { transfers, isOwnWalletFilterApplied, token } = feed;
 
   const emptyText = [
     "No",
     token?.symbol,
     "transfers",
-    mine ? "of your address" : undefined,
+    isOwnWalletFilterApplied ? "of your address" : undefined,
     "in the last 14 days",
   ]
     .filter(Boolean)
@@ -70,25 +61,25 @@ export default async function TransferFeed({ searchParams }: { searchParams: Sea
 
   return (
     <div className="flex flex-col gap-4">
-      {(wallet || tokens.length > 1) && (
+      {(signedInWallet || tokens.length > 1) && (
         <nav className="flex flex-wrap gap-x-6 gap-y-2 text-sm">
-          {wallet && (
+          {signedInWallet && (
             <div className="flex gap-2">
-              <FilterLink href={filterHref({ mine: false, token: token?.address })} active={!mine}>
+              <FilterLink href={filterHref({ ownWallet: false, token: token?.address })} active={!isOwnWalletFilterApplied}>
                 All
               </FilterLink>
-              <FilterLink href={filterHref({ mine: true, token: token?.address })} active={mine}>
+              <FilterLink href={filterHref({ ownWallet: true, token: token?.address })} active={isOwnWalletFilterApplied}>
                 Mine
               </FilterLink>
             </div>
           )}
           {tokens.length > 1 && (
             <div className="flex flex-wrap gap-2">
-              <FilterLink href={filterHref({ mine })} active={!token}>
+              <FilterLink href={filterHref({ ownWallet: isOwnWalletFilterApplied })} active={!token}>
                 All tokens
               </FilterLink>
               {tokens.map(({ address, symbol }) => (
-                <FilterLink key={address} href={filterHref({ mine, token: address })} active={token?.address === address}>
+                <FilterLink key={address} href={filterHref({ ownWallet: isOwnWalletFilterApplied, token: address })} active={token?.address === address}>
                   {symbol}
                 </FilterLink>
               ))}
@@ -96,10 +87,10 @@ export default async function TransferFeed({ searchParams }: { searchParams: Sea
           )}
         </nav>
       )}
-      {data.length === 0 ? (
+      {transfers.length === 0 ? (
         <p className="text-sm text-gray-500">{emptyText}</p>
       ) : (
-        <TransferList transfers={data} wallet={mine ? wallet! : undefined} />
+        <TransferList transfers={transfers} wallet={isOwnWalletFilterApplied ? (signedInWallet ?? undefined) : undefined} />
       )}
     </div>
   );
