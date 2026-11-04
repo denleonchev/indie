@@ -1,23 +1,21 @@
-import { createClient } from "@/lib/supabase/public";
+import { getIndexerStatus, type IndexerStatus as Status } from "@/data/indexer";
 import { timeAgo } from "@/lib/format";
 
 export default async function IndexerStatus() {
-  const supabase = createClient();
-  const { data, error } = await supabase
-    .from("indexer_state")
-    .select("last_block, last_block_at")
-    .maybeSingle();
-  if (error) {
+  let status: Status | null;
+  try {
+    status = await getIndexerStatus();
+  } catch (error) {
     console.error(error);
     return <p>Could not load the indexer status</p>;
   }
-  if (!data) return <p>The indexer has not started yet</p>;
+  if (!status) return <p>The indexer has not started yet</p>;
 
   return (
     <p className="text-sm text-gray-500">
-      Indexed up to block {data.last_block.toLocaleString("en")}, created{" "}
-      <time dateTime={data.last_block_at} title={data.last_block_at}>
-        {timeAgo(data.last_block_at)}
+      Indexed up to block {status.lastBlock.toLocaleString("en")}, created{" "}
+      <time dateTime={status.lastBlockAt} title={status.lastBlockAt}>
+        {timeAgo(status.lastBlockAt)}
       </time>
     </p>
   );
