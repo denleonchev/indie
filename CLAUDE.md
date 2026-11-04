@@ -13,6 +13,7 @@ Rules below take precedence.
 - Chain access: viem
 - Auth: Supabase Auth, wallet signature (EIP-4361)
 - Interface: Next.js on Vercel
+- Live updates: Supabase Realtime Broadcast
 
 ## Priorities
 
