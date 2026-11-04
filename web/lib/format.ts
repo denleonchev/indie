@@ -17,7 +17,7 @@ const units: [Intl.RelativeTimeFormatUnit, number][] = [
   ["minute", 60],
 ];
 
-export function timeAgo(iso: string, now = Date.now()): string {
+export function timeAgo(iso: string, now: number): string {
   const seconds = Math.round((new Date(iso).getTime() - now) / 1000);
   for (const [unit, size] of units) {
     if (Math.abs(seconds) >= size) return relativeTime.format(Math.round(seconds / size), unit);

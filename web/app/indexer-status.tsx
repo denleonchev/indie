@@ -1,5 +1,5 @@
 import { getIndexerStatus, type IndexerStatus as Status } from "@/data/indexer";
-import { timeAgo } from "@/lib/format";
+import TimeAgo from "./time-ago";
 
 export default async function IndexerStatus() {
   let status: Status | null;
@@ -14,9 +14,7 @@ export default async function IndexerStatus() {
   return (
     <p className="text-sm text-gray-500">
       Indexed up to block {status.lastBlock.toLocaleString("en")}, created{" "}
-      <time dateTime={status.lastBlockAt} title={status.lastBlockAt}>
-        {timeAgo(status.lastBlockAt)}
-      </time>
+      <TimeAgo iso={status.lastBlockAt} />
     </p>
   );
 }
