@@ -105,11 +105,40 @@ isOneToOne: false
             [_ in never]: never
           }
           Functions: {
-            "custom_access_token_hook":
+            "build_export_csv":
+{ Args: { "p_export_id": string }; Returns: string
+                           },
+"call_scheduled_function":
+{ Args: { "p_name": string }; Returns: undefined
+                           },
+"check_export_token":
+{ Args: { "p_token": string }; Returns: undefined
+                           },
+"custom_access_token_hook":
 { Args: { "event": Json }; Returns: Json
                            },
 "delete_export_job":
 { Args: { "p_message_id": number }; Returns: boolean
+                           },
+"fit_export_period":
+{ Args: { "p_period_end": string,"p_period_start": string }; Returns: Record<string, unknown>
+                           },
+"format_export_lines":
+{ Args: { "p_export_id": string }; Returns: {
+              "block_time": string,"line": string,"log_index": number
+            }[]
+                           },
+"format_token_amount":
+{ Args: { "p_amount": number,"p_decimals": number }; Returns: string
+                           },
+"insert_pending_export":
+{ Args: { "p_period_end": string,"p_period_start": string,"p_token": string,"p_wallet": string }; Returns: string
+                           },
+"queue_export":
+{ Args: { "p_export_id": string }; Returns: undefined
+                           },
+"quote_csv_text":
+{ Args: { "p_value": string }; Returns: string
                            },
 "read_export_jobs":
 { Args: { "p_count": number }; Returns: unknown[]
@@ -121,6 +150,9 @@ isOneToOne: false
       } },
 "request_export":
 { Args: { "p_period_end": string,"p_period_start": string,"p_token"?: string }; Returns: string
+                           },
+"require_signed_in_wallet":
+{ Args: Record<PropertyKey, never>; Returns: string
                            },
 "save_indexed_range":
 { Args: { "p_chain_id": number,"p_from_block": number,"p_to_block": number,"p_to_block_at": string,"p_to_block_hash"?: string,"p_transfers": Json }; Returns: undefined
