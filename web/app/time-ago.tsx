@@ -31,15 +31,11 @@ function getNow() {
   return now;
 }
 
-function getServerNow() {
-  return null;
-}
-
-export default function TimeAgo({ iso, className }: { iso: string; className?: string }) {
-  const current = useSyncExternalStore(subscribe, getNow, getServerNow);
+export default function TimeAgo({ iso, serverNow, className }: { iso: string; serverNow: number; className?: string }) {
+  const clientNow = useSyncExternalStore(subscribe, getNow, () => serverNow);
   return (
     <time dateTime={iso} title={iso} className={className}>
-      {current === null ? `${iso.slice(11, 16)} UTC` : timeAgo(iso, current)}
+      {timeAgo(iso, clientNow ?? serverNow)}
     </time>
   );
 }

@@ -1,7 +1,9 @@
 import { getIndexerStatus, type IndexerStatus as Status } from "@/data/indexer";
+import { getRequestTime } from "@/data/request-time";
 import TimeAgo from "./time-ago";
 
 export default async function IndexerStatus() {
+  const now = await getRequestTime();
   let status: Status | null;
   try {
     status = await getIndexerStatus();
@@ -14,7 +16,7 @@ export default async function IndexerStatus() {
   return (
     <p className="text-sm text-gray-500">
       Indexed up to block {status.lastBlock.toLocaleString("en")}, created{" "}
-      <TimeAgo iso={status.lastBlockAt} />
+      <TimeAgo iso={status.lastBlockAt} serverNow={now} />
     </p>
   );
 }
