@@ -23,7 +23,21 @@ export type Database = {
           }
         },"public": {
           Tables: {
-            "indexer_state": {
+            "exports": {
+                  Row: {
+                    "created_at": string,"file_path": string | null,"finished_at": string | null,"id": string,"period_end": string,"period_start": string,"status": string,"token": string | null,"wallet": string
+                  }
+                  ComputedFields: never
+                  Insert: {
+                    "created_at"?: string,"file_path"?: string | null,"finished_at"?: string | null,"id"?: string,"period_end": string,"period_start": string,"status"?: string,"token"?: string | null,"wallet": string
+                  }
+                  Update: {
+                    "created_at"?: string,"file_path"?: string | null,"finished_at"?: string | null,"id"?: string,"period_end"?: string,"period_start"?: string,"status"?: string,"token"?: string | null,"wallet"?: string
+                  }
+                  Relationships: [
+                    
+                  ]
+                },"indexer_state": {
                   Row: {
                     "chain_id": number,"last_block": number,"last_block_at": string,"last_block_hash": string | null,"lease_until": string | null,"updated_at": string
                   }
@@ -93,6 +107,20 @@ isOneToOne: false
           Functions: {
             "custom_access_token_hook":
 { Args: { "event": Json }; Returns: Json
+                           },
+"delete_export_job":
+{ Args: { "p_message_id": number }; Returns: boolean
+                           },
+"read_export_jobs":
+{ Args: { "p_count": number }; Returns: unknown[]
+                          SetofOptions: {
+        from: "*"
+        to: "message_record"
+        isOneToOne: false
+        isSetofReturn: true
+      } },
+"request_export":
+{ Args: { "p_period_end": string,"p_period_start": string,"p_token"?: string }; Returns: string
                            },
 "save_indexed_range":
 { Args: { "p_chain_id": number,"p_from_block": number,"p_to_block": number,"p_to_block_at": string,"p_to_block_hash"?: string,"p_transfers": Json }; Returns: undefined
