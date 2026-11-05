@@ -40,7 +40,6 @@ Option B.
 | Part         | Choice                          |
 | ------------ | ------------------------------- |
 | Compute      | Supabase Edge Functions (Deno)  |
-| Routing      | Hono                            |
 | Database     | Supabase Postgres               |
 | Schedule     | `pg_cron` through `pg_net`      |
 | Queue        | pgmq                            |
@@ -58,11 +57,9 @@ users.
 | --------- | --------------------- | ---------------------------------- | -------------- |
 | `indexer` | `pg_cron`             | secret key, bypasses policies      | `Deno.serve`   |
 | `worker`  | `pg_cron`, for pgmq   | secret key, bypasses policies      | `Deno.serve`   |
-| `api`     | users, external hooks | by task: user token or secret key  | Hono           |
 
-- **Hono only where there are several routes.** `api` serves export and the
-  notification channel webhook, which share auth, CORS and error handling.
-  `indexer` and `worker` have one handler each and need no router.
+- **No router.** `indexer` and `worker` have one handler each. Users reach
+  data through the web server, not through a function (see ADR 07).
 - **Every function URL is public.** `pg_net` calls the scheduled functions
   through the same gateway as browsers, so they authenticate the caller too.
 - **Scheduled calls carry a dedicated `CRON_SECRET`,** stored in Vault for
