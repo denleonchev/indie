@@ -26,7 +26,6 @@ directly; there is no API layer in between.
 | Part         | Choice                                     |
 | ------------ | ------------------------------------------ |
 | Compute      | Supabase Edge Functions (Deno)             |
-| Routing      | Hono                                       |
 | Database     | Supabase Postgres                          |
 | Schedule     | `pg_cron` through `pg_net`                 |
 | Queue        | pgmq                                       |
@@ -86,7 +85,7 @@ In Vercel, set `NEXT_PUBLIC_SUPABASE_URL` and
 ## Layout
 
 ```
-supabase/functions/   indexer, worker, api, _shared
+supabase/functions/   indexer, worker, _shared
 supabase/migrations/  schema and policies
 web/                  interface
 docs/adr/             decisions
@@ -107,3 +106,5 @@ docs/adr/             decisions
 - [03. Wallet address of a signed-in user](docs/adr/03-wallet-address.md)
 - [04. Reorg handling](docs/adr/04-reorg-handling.md)
 - [05. Live updates](docs/adr/05-live-updates.md)
+- [06. Export jobs](docs/adr/06-export-jobs.md)
+- [07. Export files](docs/adr/07-export-files.md)

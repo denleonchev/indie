@@ -6,7 +6,6 @@ Rules below take precedence.
 ## Stack (see docs/adr/ for rationale)
 
 - Compute: Supabase Edge Functions (Deno)
-- Routing: Hono
 - Database: Supabase Postgres
 - Schedule: `pg_cron` through `pg_net`
 - Queue: pgmq
