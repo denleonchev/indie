@@ -6,7 +6,7 @@ import { createClient } from "@/lib/supabase/client";
 
 const REFRESH_DELAY_MS = 1000;
 
-export default function RefreshOnTransferChanges() {
+export default function RefreshOnSignal({ channel: topic }: { channel: string }) {
   const router = useRouter();
 
   useEffect(() => {
@@ -23,7 +23,7 @@ export default function RefreshOnTransferChanges() {
     }
 
     const channel = supabase
-      .channel("transfers", { config: { private: true } })
+      .channel(topic, { config: { private: true } })
       .on("broadcast", { event: "changed" }, refreshSoon)
       .subscribe((status) => {
         if (status !== "SUBSCRIBED") return;
@@ -35,7 +35,7 @@ export default function RefreshOnTransferChanges() {
       clearTimeout(refreshTimer);
       supabase.removeChannel(channel);
     };
-  }, [router]);
+  }, [router, topic]);
 
   return null;
 }

@@ -1,4 +1,5 @@
 import type { createAdminClient } from "../_shared/db.ts";
+import type { ExportStatus } from "../_shared/export-status.ts";
 
 type Db = ReturnType<typeof createAdminClient>;
 export type Job = { msg_id: number; read_ct: number; message: unknown };
@@ -15,9 +16,12 @@ async function deleteJob(db: Db, messageId: number) {
 async function markFailed(db: Db, exportId: string) {
   const { error } = await db
     .from("exports")
-    .update({ status: "failed", finished_at: new Date().toISOString() })
+    .update({
+      status: "failed" satisfies ExportStatus,
+      finished_at: new Date().toISOString(),
+    })
     .eq("id", exportId)
-    .eq("status", "pending");
+    .eq("status", "pending" satisfies ExportStatus);
   if (error) throw new Error(`exports update failed: ${error.message}`);
 }
 
@@ -36,12 +40,12 @@ async function buildExport(db: Db, exportId: string, wallet: string) {
   const { error: updateError } = await db
     .from("exports")
     .update({
-      status: "ready",
+      status: "ready" satisfies ExportStatus,
       file_path: filePath,
       finished_at: new Date().toISOString(),
     })
     .eq("id", exportId)
-    .eq("status", "pending");
+    .eq("status", "pending" satisfies ExportStatus);
   if (updateError) {
     throw new Error(`exports update failed: ${updateError.message}`);
   }
@@ -56,7 +60,7 @@ export async function handleJob(db: Db, job: Job) {
     .maybeSingle();
   if (error) throw new Error(`exports select failed: ${error.message}`);
 
-  if (!row || row.status !== "pending") {
+  if (!row || row.status !== ("pending" satisfies ExportStatus)) {
     await deleteJob(db, job.msg_id);
     return "skipped";
   }
