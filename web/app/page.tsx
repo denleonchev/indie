@@ -1,18 +1,22 @@
 import { Suspense } from "react";
 import Account from "./account";
 import IndexerStatus from "./indexer-status";
-import RefreshOnTransferChanges from "./refresh-on-transfer-changes";
+import ExportsSection from "./exports-section";
+import RefreshOnSignal from "./refresh-on-signal";
 import TransferFeed from "./transfer-feed";
 
 export default function Home({ searchParams }: PageProps<"/">) {
   return (
     <main className="mx-auto max-w-3xl px-4 py-8">
-      <RefreshOnTransferChanges />
+      <RefreshOnSignal channel="transfers" />
       <div className="mb-4">
         <Suspense fallback={null}>
           <Account />
         </Suspense>
       </div>
+      <Suspense fallback={null}>
+        <ExportsSection />
+      </Suspense>
       <h1 className="text-xl font-semibold">Transfers</h1>
       <Suspense fallback={<p className="text-sm text-gray-500">Loading…</p>}>
         <IndexerStatus />
