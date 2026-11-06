@@ -24,3 +24,25 @@ be retried.
 
 FR-8 puts the queue under catch-up, but building files is the work that needs
 one, so the queue serves exports.
+
+## Flow
+
+```mermaid
+sequenceDiagram
+  participant B as Browser
+  participant W as Next.js
+  participant D as Postgres
+  participant K as worker
+  participant S as Storage
+  B->>W: Export CSV
+  W->>D: request_export as the user
+  D->>D: pending row and queue message in one transaction
+  D-->>K: wake up after commit
+  K->>D: read the job, build the CSV
+  K->>S: upload wallet/id.csv
+  K->>D: mark ready
+  D-->>B: signal on the private exports channel
+  B->>W: refresh
+  W->>S: sign a ten-minute link as the user
+  B->>S: download
+```

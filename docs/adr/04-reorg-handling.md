@@ -28,3 +28,19 @@ value above the usual reorg depth, and users see only confirmed transfers.
 - **A mismatch at or below `finalized` stops the pass** and changes nothing.
 - **Move to option A** if the non-final logs often reach
   `MAX_TRANSFERS_PER_PASS`, or the service keeps derived data such as balances.
+
+## Flow
+
+```mermaid
+flowchart TD
+  start["pg_cron calls indexer"] --> lease{"Lease taken?"}
+  lease -->|no| skip["Skip: another pass runs"]
+  lease -->|yes| check{"Position hash matches the chain?"}
+  check -->|yes| read
+  check -->|no| final{"Position is final?"}
+  final -->|yes| stop["Stop with an error"]
+  final -->|no| sync["Reread blocks above finalized, replace rows that differ"]
+  sync --> read["Read ranges up to head minus confirmations"]
+  read --> save["Save each range with the new position in one transaction"]
+  save --> signal["Trigger signals open pages"]
+```
