@@ -3,9 +3,8 @@
 Reads ERC-20 transfers from an EVM chain. Anyone can see the latest transfers,
 and each wallet owner can see their own.
 
-**Status: in progress.** Every minute the indexer saves the newest block, and
-the web page shows it. Transfers, sign-in, live updates and export are not
-built yet.
+**Status:** runs on Sepolia. The feed, wallet sign-in, live updates and CSV
+export work; optional features from the requirements are not built.
 
 ## What it does
 
@@ -20,6 +19,33 @@ signature to see your own transfers and exports. The address travels in your
 token, and row-level policies in the database compare it against each row, so a
 client can only read its own exports. The interface talks to the database
 directly; there is no API layer in between.
+
+## How it works
+
+```mermaid
+flowchart LR
+  browser["Browser"] --> web["Next.js on Vercel"]
+  web --> supabase
+  browser <-. "subscribes, gets live signals" .-> supabase
+  cron["pg_cron"] --> functions
+  functions --> supabase
+  functions --> node["RPC node"]
+  subgraph supabase["Supabase"]
+    db[("Postgres")]
+    storage[("Storage")]
+    realtime["Realtime"]
+  end
+  subgraph functions["Edge Functions"]
+    indexer["indexer"]
+    worker["worker"]
+    cleaner["cleaner"]
+  end
+```
+
+The browser never holds a secret key: Edge Functions use it, and the web
+server acts as the signed-in user under row-level policies. How an indexer pass
+works is in [ADR 04](docs/adr/04-reorg-handling.md), and how an export is built
+is in [ADR 06](docs/adr/06-export-jobs.md).
 
 ## Stack
 
