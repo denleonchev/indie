@@ -13,5 +13,7 @@ and code that bypasses policies must not serve users.
   lets a user read only their own folder.
 - **A link lives ten minutes,** and a new one is signed on every page view.
   Exports and files are deleted after seven days.
+- **A daily `cleaner` function** removes old files first, then their rows, so a
+  failed run leaves rows that the next run finds again.
 - **No `api` function and no Hono for now.** Requests and links go through the
   web data layer, so `api` would only forward calls.

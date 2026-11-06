@@ -439,3 +439,8 @@ entrypoint = "./functions/worker/index.ts"
 # For example, if you want to serve static HTML pages in your function:
 # static_files = [ "./functions/worker/*.html" ]
 
+[functions.cleaner]
+enabled = true
+verify_jwt = false
+import_map = "./functions/cleaner/deno.json"
+entrypoint = "./functions/cleaner/index.ts"

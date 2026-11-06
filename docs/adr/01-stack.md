@@ -57,8 +57,9 @@ users.
 | --------- | --------------------- | ---------------------------------- | -------------- |
 | `indexer` | `pg_cron`             | secret key, bypasses policies      | `Deno.serve`   |
 | `worker`  | `pg_cron`, for pgmq   | secret key, bypasses policies      | `Deno.serve`   |
+| `cleaner` | `pg_cron`, daily      | secret key, bypasses policies      | `Deno.serve`   |
 
-- **No router.** `indexer` and `worker` have one handler each. Users reach
+- **No router.** Each function has one handler. Users reach
   data through the web server, not through a function (see ADR 07).
 - **Every function URL is public.** `pg_net` calls the scheduled functions
   through the same gateway as browsers, so they authenticate the caller too.
