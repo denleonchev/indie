@@ -13,7 +13,7 @@ be retried.
   the web server calls it as the user.
 - **One `pending` export per wallet,** checked in the function and enforced by
   a partial unique index against races.
-- **The worker is woken at once through `pg_net`,** and `pg_cron` runs it every
+- **The `exporter` function is woken at once through `pg_net`,** and `pg_cron` runs it every
   minute for retries and lost calls.
 - **Three attempts, five-minute visibility timeout,** then the export is
   `failed`.
@@ -32,7 +32,7 @@ sequenceDiagram
   participant B as Browser
   participant W as Next.js
   participant D as Postgres
-  participant K as worker
+  participant K as exporter
   participant S as Storage
   B->>W: Export CSV
   W->>D: request_export as the user

@@ -53,11 +53,11 @@ Functions are split by who calls them and with what rights, not by endpoint,
 so code that bypasses policies never shares a function with code that serves
 users.
 
-| Function  | Called by             | Rights                             | Routing        |
-| --------- | --------------------- | ---------------------------------- | -------------- |
-| `indexer` | `pg_cron`             | secret key, bypasses policies      | `Deno.serve`   |
-| `worker`  | `pg_cron`, for pgmq   | secret key, bypasses policies      | `Deno.serve`   |
-| `cleaner` | `pg_cron`, daily      | secret key, bypasses policies      | `Deno.serve`   |
+| Function   | Called by             | Rights                             | Routing        |
+| ---------- | --------------------- | ---------------------------------- | -------------- |
+| `indexer`  | `pg_cron`             | secret key, bypasses policies      | `Deno.serve`   |
+| `exporter` | `pg_cron`, for pgmq   | secret key, bypasses policies      | `Deno.serve`   |
+| `cleaner`  | `pg_cron`, daily      | secret key, bypasses policies      | `Deno.serve`   |
 
 - **No router.** Each function has one handler. Users reach
   data through the web server, not through a function (see ADR 07).

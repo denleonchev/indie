@@ -37,7 +37,7 @@ flowchart LR
   end
   subgraph functions["Edge Functions"]
     indexer["indexer"]
-    worker["worker"]
+    exporter["exporter"]
     cleaner["cleaner"]
   end
 ```
@@ -111,7 +111,7 @@ In Vercel, set `NEXT_PUBLIC_SUPABASE_URL` and
 ## Layout
 
 ```
-supabase/functions/   indexer, worker, cleaner, _shared
+supabase/functions/   indexer, exporter, cleaner, _shared
 supabase/migrations/  schema and policies
 web/                  interface
 docs/adr/             decisions
