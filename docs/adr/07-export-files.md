@@ -8,7 +8,7 @@ and code that bypasses policies must not serve users.
 ## Decision
 
 - **Files live in a private bucket** at `exports/<wallet>/<export id>.csv`. The
-  worker uploads them with the secret key.
+  `exporter` function uploads them with the secret key.
 - **The web server signs links as the user.** A policy on `storage.objects`
   lets a user read only their own folder.
 - **A link lives ten minutes,** and a new one is signed on every page view.
