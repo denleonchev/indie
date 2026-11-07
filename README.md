@@ -105,8 +105,10 @@ select vault.create_secret('https://<project-ref>.supabase.co', 'project_url');
 select vault.create_secret('<the same CRON_SECRET>', 'cron_secret');
 ```
 
-In Vercel, set `NEXT_PUBLIC_SUPABASE_URL` and
-`NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`.
+In Vercel, set the variables from `web/.env.example`: `NEXT_PUBLIC_SUPABASE_URL`,
+`NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY`, `NEXT_PUBLIC_EXPLORER_URL` and
+`NEXT_PUBLIC_NETWORK_NAME`. Also turn on "Include files outside of the Root
+Directory", because the web build imports `supabase/functions/_shared`.
 
 ## Layout
 

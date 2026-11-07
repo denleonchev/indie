@@ -1,17 +1,12 @@
 import { Suspense } from "react";
-import Account from "./account";
 import IndexerStatus from "./indexer-status";
 import ExportsSection from "./exports-section";
 import TransferFeed from "./transfer-feed";
+import WalletHint from "./wallet-hint";
 
 export default function Home({ searchParams }: PageProps<"/">) {
   return (
     <main className="mx-auto max-w-3xl px-4 py-8">
-      <div className="mb-4">
-        <Suspense fallback={null}>
-          <Account />
-        </Suspense>
-      </div>
       <Suspense fallback={null}>
         <ExportsSection />
       </Suspense>
@@ -24,6 +19,7 @@ export default function Home({ searchParams }: PageProps<"/">) {
           <TransferFeed searchParams={searchParams} />
         </Suspense>
       </div>
+      <WalletHint />
     </main>
   );
 }
