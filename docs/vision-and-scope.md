@@ -17,7 +17,7 @@ Main scenarios:
 1. **Feed.** A visitor opens the site without signing in. They see the latest transfers of the listed tokens and how far the indexer is behind the chain.
 2. **Sign-in.** The user signs a message with their wallet. They get a session, and the wallet address goes into the token.
 3. **History.** The user opens the list of their own transfers from the last 14 days. Each row shows the amount, the date and a link to the explorer.
-4. **Live transfer.** While the page is open, a new transfer appears by itself. The user does not reload the page.
+4. **Live transfer.** While the page is open, it tells the user about new transfers and shows them on a click. The user does not reload the page.
 5. **Export.** The user asks for their history over a period. They get a link to a CSV file, and the link expires.
 6. **Catch-up.** The service was off for a day. On start it reads what it missed and creates no duplicates.
 7. **Reorg.** Some blocks were replaced. The service rolls back the affected records and reads the new branch.
@@ -43,7 +43,7 @@ Nobody sees the last two scenarios. They decide whether the screen can be truste
 | Access                | FR-13 | Let anyone read transfers, and a client read only their own exports                  |
 | Dashboard             | FR-14 | Show the latest transfers and the indexer status without sign-in                     |
 | Dashboard             | FR-15 | Show a signed-in user the transfers of their address, with a token filter            |
-| Dashboard             | FR-16 | Deliver a new transfer to an open page without a reload                              |
+| Dashboard             | FR-16 | Tell an open page about new transfers and show them on request, without a reload     |
 | Dashboard             | FR-17 | Return own history for a period as a file behind a link that expires                 |
 | Optional              | FR-18 | Send a notification about an incoming transfer to an external channel                |
 | Optional              | FR-19 | Index ERC-721 and cache token images                                                 |

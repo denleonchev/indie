@@ -4,6 +4,7 @@ import { getTokens, type Token } from "@/data/tokens";
 import { getTransfers, type Feed } from "@/data/transfers";
 import { readFeedFilters } from "@/lib/feed-url";
 import FeedFilters from "./feed-filters";
+import NewTransfersBanner from "./new-transfers-banner";
 import TransferList from "./transfer-list";
 
 type SearchParams = Promise<Record<string, string | string[] | undefined>>;
@@ -41,6 +42,7 @@ export default async function TransferFeed({ searchParams }: { searchParams: Sea
         isOwnWalletFilterApplied={isOwnWalletFilterApplied}
         token={token}
       />
+      <NewTransfersBanner showCount={!isOwnWalletFilterApplied && !token} />
       {transfers.length === 0 ? (
         <p className="text-sm text-gray-500">{emptyText}</p>
       ) : (

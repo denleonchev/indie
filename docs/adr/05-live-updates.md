@@ -22,5 +22,6 @@ Option B.
   only when rows really changed.
 - **The channel is private and read-only.** Anyone can listen; only the
   database can send, because no policy allows clients to write.
-- **The page calls `router.refresh()`** on a signal and after a reconnect, at
-  most once a second.
+- **The feed shows a banner instead of refreshing itself.** Signals count new
+  transfers, and a click calls `router.refresh()`, so rows do not move while
+  someone reads them. Exports still refresh by themselves.

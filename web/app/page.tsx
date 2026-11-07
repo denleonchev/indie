@@ -2,13 +2,11 @@ import { Suspense } from "react";
 import Account from "./account";
 import IndexerStatus from "./indexer-status";
 import ExportsSection from "./exports-section";
-import RefreshOnSignal from "./refresh-on-signal";
 import TransferFeed from "./transfer-feed";
 
 export default function Home({ searchParams }: PageProps<"/">) {
   return (
     <main className="mx-auto max-w-3xl px-4 py-8">
-      <RefreshOnSignal channel="transfers" />
       <div className="mb-4">
         <Suspense fallback={null}>
           <Account />
