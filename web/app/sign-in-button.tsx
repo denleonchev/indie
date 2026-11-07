@@ -1,16 +1,9 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState, useSyncExternalStore } from "react";
+import { useState } from "react";
 import { createClient } from "@/lib/supabase/client";
-
-function subscribe() {
-  return () => {};
-}
-
-function hasWallet() {
-  return "ethereum" in window;
-}
+import { useHasWallet } from "@/lib/use-has-wallet";
 
 function isRejection(error: unknown) {
   const code = (error as { code?: unknown })?.code;
@@ -20,7 +13,7 @@ function isRejection(error: unknown) {
 
 export default function SignInButton() {
   const router = useRouter();
-  const walletFound = useSyncExternalStore(subscribe, hasWallet, () => null);
+  const walletFound = useHasWallet();
   const [signing, setSigning] = useState(false);
   const [problem, setProblem] = useState<string | null>(null);
 
@@ -45,27 +38,23 @@ export default function SignInButton() {
     }
   }
 
-  if (walletFound === null) return null;
-
-  if (!walletFound) {
-    return (
-      <p className="text-sm text-gray-500">
-        To see your own transfers, sign in with a browser wallet such as MetaMask.
-      </p>
-    );
-  }
+  if (!walletFound) return null;
 
   return (
-    <div className="flex flex-col gap-2 text-sm">
+    <div className="relative text-sm">
       <button
         type="button"
         onClick={signIn}
         disabled={signing}
-        className="self-start rounded border border-gray-300 px-3 py-1 disabled:opacity-50"
+        className="whitespace-nowrap rounded border border-gray-300 px-3 py-1 disabled:opacity-50"
       >
         {signing ? "Waiting for the wallet…" : "Sign in with wallet"}
       </button>
-      {problem && <p className="text-red-600">{problem}</p>}
+      {problem && (
+        <p className="absolute right-0 top-full z-20 mt-2 w-72 rounded border border-gray-200 bg-white p-2 text-red-600 shadow">
+          {problem}
+        </p>
+      )}
     </div>
   );
 }

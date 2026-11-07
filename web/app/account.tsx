@@ -11,9 +11,9 @@ export default async function Account() {
   if (!wallet) return <SignInButton />;
 
   return (
-    <p className="flex flex-wrap items-center gap-3 text-sm">
+    <p className="flex items-center gap-3 whitespace-nowrap text-sm">
       <span>
-        Signed in as{" "}
+        <span className="hidden sm:inline">Signed in as </span>
         <span className="font-mono" title={wallet}>
           {shortAddress(wallet)}
         </span>
