@@ -13,6 +13,8 @@ export type Transfer = {
   tokens: { symbol: string; decimals: number };
 };
 
+export const FEED_PAGE_SIZE = 25;
+
 export type TransferFilters = { ownWallet: boolean; token?: string };
 
 export type Feed = {
@@ -35,7 +37,7 @@ export async function getTransfers(filters: TransferFilters): Promise<Feed> {
   const { data, error } = await query
     .order("block_time", { ascending: false })
     .order("log_index", { ascending: false })
-    .limit(50);
+    .limit(FEED_PAGE_SIZE);
   if (error) throw new Error(`transfers select failed: ${error.message}`);
 
   return { transfers: data, isOwnWalletFilterApplied: ownWallet !== null, token };

@@ -2,7 +2,7 @@ import { getSignedInWallet } from "@/data/auth";
 import { getOwnExports, type OwnExport } from "@/data/exports";
 import { getRequestTime } from "@/data/request-time";
 import { getTokens, type Token } from "@/data/tokens";
-import { getTransfers, type Feed } from "@/data/transfers";
+import { FEED_PAGE_SIZE, getTransfers, type Feed } from "@/data/transfers";
 import { readFeedFilters } from "@/lib/feed-url";
 import ExportDialog from "./export-dialog";
 import ExportForm from "./export-form";
@@ -98,6 +98,9 @@ export default async function TransferFeed({ searchParams }: { searchParams: Sea
           wallet={isOwnWalletFilterApplied ? (signedInWallet ?? undefined) : undefined}
           now={now}
         />
+      )}
+      {transfers.length === FEED_PAGE_SIZE && (
+        <p className="text-sm text-gray-500">Latest {FEED_PAGE_SIZE} transfers</p>
       )}
     </div>
   );
