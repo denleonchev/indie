@@ -47,7 +47,7 @@ export default function NewTransfersBanner({ showCount }: { showCount: boolean }
       : "↑ Show new transfers";
 
   return (
-    <div className="sticky top-4 z-10 -mt-4 flex h-0 justify-center">
+    <div className="sticky top-18 z-10 -mt-4 flex h-0 justify-center">
       {(newTransferCount > 0 || hasOtherChanges) && (
         <button
           type="button"
