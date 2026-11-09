@@ -13,7 +13,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="en">
       <body className="bg-page text-fg">
-        <header className="border-b border-line">
+        <header className="sticky top-0 z-20 border-b border-line bg-page">
           <div className="mx-auto flex h-14 max-w-3xl items-center gap-3 px-4">
             <span className="font-semibold">Wallet activity</span>
             {networkName && (
