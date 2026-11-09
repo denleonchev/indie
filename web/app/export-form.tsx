@@ -8,10 +8,12 @@ export default function ExportForm({
   tokens,
   defaultFrom,
   defaultTo,
+  defaultToken,
 }: {
   tokens: Token[];
   defaultFrom: string;
   defaultTo: string;
+  defaultToken?: string;
 }) {
   const [state, formAction, pending] = useActionState(requestExportAction, {});
 
@@ -28,7 +30,7 @@ export default function ExportForm({
       {tokens.length > 1 && (
         <label className="flex flex-col gap-1">
           Token
-          <select name="token" defaultValue="" className="rounded border px-2 py-1">
+          <select name="token" defaultValue={defaultToken ?? ""} className="rounded border px-2 py-1">
             <option value="">All tokens</option>
             {tokens.map(({ address, symbol }) => (
               <option key={address} value={address}>
