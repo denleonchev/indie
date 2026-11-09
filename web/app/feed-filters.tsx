@@ -29,7 +29,7 @@ export default function FeedFilters({
   if (!signedIn && !showTokenFilter) return null;
 
   return (
-    <nav className="flex flex-wrap gap-x-6 gap-y-2 text-sm">
+    <nav className="flex flex-wrap gap-x-6 gap-y-2">
       {signedIn && (
         <div className="flex gap-2">
           <FilterLink href={feedHref({ ownWallet: false, token: token?.address })} active={!isOwnWalletFilterApplied}>
