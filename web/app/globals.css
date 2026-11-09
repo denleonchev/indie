@@ -1,1 +1,40 @@
 @import "tailwindcss";
+
+@theme inline {
+  --color-page: var(--page);
+  --color-surface: var(--surface);
+  --color-subtle: var(--subtle);
+  --color-fg: var(--fg);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-control: var(--control);
+  --color-strong: var(--strong);
+  --color-danger: var(--danger);
+}
+
+:root {
+  color-scheme: light dark;
+  --page: --theme(--color-white);
+  --surface: --theme(--color-white);
+  --subtle: --theme(--color-gray-100);
+  --fg: --theme(--color-gray-900);
+  --muted: --theme(--color-gray-500);
+  --line: --theme(--color-gray-200);
+  --control: --theme(--color-gray-300);
+  --strong: --theme(--color-gray-900);
+  --danger: --theme(--color-red-600);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --page: --theme(--color-gray-950);
+    --surface: --theme(--color-gray-900);
+    --subtle: --theme(--color-gray-800);
+    --fg: --theme(--color-gray-100);
+    --muted: --theme(--color-gray-400);
+    --line: --theme(--color-gray-800);
+    --control: --theme(--color-gray-600);
+    --strong: --theme(--color-gray-100);
+    --danger: --theme(--color-red-400);
+  }
+}

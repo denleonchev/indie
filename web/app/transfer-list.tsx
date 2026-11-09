@@ -22,13 +22,13 @@ export default function TransferList({
   const explorerUrl = process.env.NEXT_PUBLIC_EXPLORER_URL;
   return (
     <div className="text-sm sm:grid sm:grid-cols-[auto_auto_auto_1fr_auto] sm:gap-x-6">
-      <div className="hidden border-b border-gray-200 pb-2 text-xs text-gray-500 sm:col-span-5 sm:grid sm:grid-cols-subgrid">
+      <div className="hidden border-b border-line pb-2 text-xs text-muted sm:col-span-5 sm:grid sm:grid-cols-subgrid">
         <span>Time</span>
         <span>From</span>
         <span>To</span>
         <span className="text-right">Amount</span>
       </div>
-      <ul className="divide-y divide-gray-200 sm:col-span-5 sm:grid sm:grid-cols-subgrid">
+      <ul className="divide-y divide-line sm:col-span-5 sm:grid sm:grid-cols-subgrid">
         {transfers.map((transfer) => {
           const sign = wallet === undefined ? "" : transfer.to_address === wallet ? "+" : "−";
           return (
@@ -39,7 +39,7 @@ export default function TransferList({
               <TimeAgo
                 iso={transfer.block_time}
                 serverNow={now}
-                className={`${placeOnSmallScreens.time} ${placeInColumns} text-gray-500`}
+                className={`${placeOnSmallScreens.time} ${placeInColumns} text-muted`}
               />
               <span className={`${placeOnSmallScreens.addresses} flex gap-1 font-mono sm:contents`}>
                 <span title={transfer.from_address}>{shortAddress(transfer.from_address)}</span>
@@ -49,7 +49,7 @@ export default function TransferList({
               <span className={`${placeOnSmallScreens.amount} ${placeInColumns} text-right font-mono`}>
                 {sign}
                 {formatAmount(transfer.amount, transfer.tokens.decimals)}{" "}
-                <span className="text-gray-500">{transfer.tokens.symbol}</span>
+                <span className="text-muted">{transfer.tokens.symbol}</span>
               </span>
               {explorerUrl && (
                 <a

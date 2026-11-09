@@ -52,7 +52,7 @@ export default function NewTransfersBanner({ showCount }: { showCount: boolean }
         <button
           type="button"
           onClick={showNewTransfers}
-          className="h-fit rounded-full border border-gray-300 bg-white px-3 py-1 text-sm shadow"
+          className="h-fit rounded-full border border-control bg-surface px-3 py-1 text-sm shadow"
         >
           {label}
         </button>

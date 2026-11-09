@@ -12,12 +12,12 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   const networkName = process.env.NEXT_PUBLIC_NETWORK_NAME;
   return (
     <html lang="en">
-      <body>
-        <header className="border-b border-gray-200">
+      <body className="bg-page text-fg">
+        <header className="border-b border-line">
           <div className="mx-auto flex h-14 max-w-3xl items-center gap-3 px-4">
             <span className="font-semibold">Wallet activity</span>
             {networkName && (
-              <span className="rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-600">{networkName}</span>
+              <span className="rounded-full bg-subtle px-2 py-0.5 text-xs text-muted">{networkName}</span>
             )}
             <div className="ml-auto">
               <Suspense fallback={null}>

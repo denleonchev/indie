@@ -7,7 +7,7 @@ function FilterLink({ href, active, children }: { href: string; active: boolean;
     <Link
       href={href}
       aria-current={active ? "true" : undefined}
-      className={`rounded border px-2 py-0.5 ${active ? "border-gray-900 font-semibold" : "border-gray-300 text-gray-600"}`}
+      className={`rounded border px-2 py-0.5 ${active ? "border-strong font-semibold" : "border-control text-muted"}`}
     >
       {children}
     </Link>
