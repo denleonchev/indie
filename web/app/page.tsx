@@ -1,4 +1,5 @@
 import { Suspense } from "react";
+import FeedSkeleton from "./feed-skeleton";
 import IndexerStatus from "./indexer-status";
 import TransferFeed from "./transfer-feed";
 import WalletHint from "./wallet-hint";
@@ -11,7 +12,7 @@ export default function Home({ searchParams }: PageProps<"/">) {
         <IndexerStatus />
       </Suspense>
       <div className="mt-6">
-        <Suspense fallback={<p>Loading…</p>}>
+        <Suspense fallback={<FeedSkeleton />}>
           <TransferFeed searchParams={searchParams} />
         </Suspense>
       </div>
