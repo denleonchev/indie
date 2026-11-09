@@ -8,9 +8,11 @@ export default function Home({ searchParams }: PageProps<"/">) {
   return (
     <main className="mx-auto max-w-3xl px-4 py-8">
       <h1 className="text-xl font-semibold">Transfers</h1>
-      <Suspense fallback={<p className="text-sm text-muted">Loading…</p>}>
-        <IndexerStatus />
-      </Suspense>
+      <div className="min-h-10 sm:min-h-5">
+        <Suspense fallback={<p className="text-sm text-muted">Loading…</p>}>
+          <IndexerStatus />
+        </Suspense>
+      </div>
       <div className="mt-6">
         <Suspense fallback={<FeedSkeleton />}>
           <TransferFeed searchParams={searchParams} />
