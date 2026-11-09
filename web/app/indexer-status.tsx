@@ -14,7 +14,7 @@ export default async function IndexerStatus() {
   if (!status) return <p>The indexer has not started yet</p>;
 
   return (
-    <p className="text-sm text-gray-500">
+    <p className="text-sm text-muted">
       Indexed up to block {status.lastBlock.toLocaleString("en")}, created{" "}
       <TimeAgo iso={status.lastBlockAt} serverNow={now} />
     </p>

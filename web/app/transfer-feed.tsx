@@ -1,6 +1,7 @@
 import { getSignedInWallet } from "@/data/auth";
 import { getOwnExports, type OwnExport } from "@/data/exports";
 import { getRequestTime } from "@/data/request-time";
+import { getRetentionDays } from "@/data/settings";
 import { getTokens, type Token } from "@/data/tokens";
 import { FEED_PAGE_SIZE, getTransfers, type Feed } from "@/data/transfers";
 import { readFeedFilters } from "@/lib/feed-url";
@@ -38,12 +39,14 @@ export default async function TransferFeed({ searchParams }: { searchParams: Sea
   let tokens: Token[];
   let feed: Feed;
   let exports: OwnExport[] | null;
+  let retentionDays: number;
   try {
-    [signedInWallet, tokens, feed, exports] = await Promise.all([
+    [signedInWallet, tokens, feed, exports, retentionDays] = await Promise.all([
       getSignedInWallet(),
       getTokens(),
       getTransfers(filters),
       getOwnExportsIfSignedIn(),
+      getRetentionDays(),
     ]);
   } catch (error) {
     console.error(error);
@@ -57,7 +60,7 @@ export default async function TransferFeed({ searchParams }: { searchParams: Sea
     token?.symbol,
     "transfers",
     isOwnWalletFilterApplied ? "of your address" : undefined,
-    "in the last 14 days",
+    `in the last ${retentionDays} ${retentionDays === 1 ? "day" : "days"}`,
   ]
     .filter(Boolean)
     .join(" ");
@@ -84,14 +87,14 @@ export default async function TransferFeed({ searchParams }: { searchParams: Sea
             {exports ? (
               <ExportList exports={exports} now={now} />
             ) : (
-              <p className="text-sm text-red-600">Could not load your exports</p>
+              <p className="text-sm text-danger">Could not load your exports</p>
             )}
           </ExportDialog>
         )}
       </div>
       <NewTransfersBanner showCount={!isOwnWalletFilterApplied && !token} />
       {transfers.length === 0 ? (
-        <p className="text-sm text-gray-500">{emptyText}</p>
+        <p className="text-sm text-muted">{emptyText}</p>
       ) : (
         <TransferList
           transfers={transfers}
@@ -100,7 +103,7 @@ export default async function TransferFeed({ searchParams }: { searchParams: Sea
         />
       )}
       {transfers.length === FEED_PAGE_SIZE && (
-        <p className="text-sm text-gray-500">Latest {FEED_PAGE_SIZE} transfers</p>
+        <p className="text-sm text-muted">Latest {FEED_PAGE_SIZE} transfers</p>
       )}
     </div>
   );

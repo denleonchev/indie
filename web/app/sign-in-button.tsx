@@ -46,12 +46,12 @@ export default function SignInButton() {
         type="button"
         onClick={signIn}
         disabled={signing}
-        className="whitespace-nowrap rounded border border-gray-300 px-3 py-1 disabled:opacity-50"
+        className="whitespace-nowrap rounded border border-control px-3 py-1 disabled:opacity-50"
       >
         {signing ? "Waiting for the wallet…" : "Sign in with wallet"}
       </button>
       {problem && (
-        <p className="absolute right-0 top-full z-20 mt-2 w-72 rounded border border-gray-200 bg-white p-2 text-red-600 shadow">
+        <p className="absolute right-0 top-full z-20 mt-2 w-72 rounded border border-line bg-surface p-2 text-danger shadow">
           {problem}
         </p>
       )}

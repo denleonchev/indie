@@ -21,16 +21,16 @@ export default function ExportForm({
     <form action={formAction} className="flex flex-wrap items-end gap-3 text-sm">
       <label className="flex flex-col gap-1">
         From
-        <input type="date" name="from" defaultValue={defaultFrom} required className="rounded border px-2 py-1" />
+        <input type="date" name="from" defaultValue={defaultFrom} required className="rounded border border-control px-2 py-1" />
       </label>
       <label className="flex flex-col gap-1">
         To
-        <input type="date" name="to" defaultValue={defaultTo} required className="rounded border px-2 py-1" />
+        <input type="date" name="to" defaultValue={defaultTo} required className="rounded border border-control px-2 py-1" />
       </label>
       {tokens.length > 1 && (
         <label className="flex flex-col gap-1">
           Token
-          <select name="token" defaultValue={defaultToken ?? ""} className="rounded border px-2 py-1">
+          <select name="token" defaultValue={defaultToken ?? ""} className="rounded border border-control px-2 py-1">
             <option value="">All tokens</option>
             {tokens.map(({ address, symbol }) => (
               <option key={address} value={address}>
@@ -43,11 +43,11 @@ export default function ExportForm({
       <button
         type="submit"
         disabled={pending}
-        className="rounded border border-gray-300 px-3 py-1 disabled:opacity-50"
+        className="rounded border border-control px-3 py-1 disabled:opacity-50"
       >
         {pending ? "Requesting…" : "Export CSV"}
       </button>
-      {state.error && <p className="w-full text-red-600">{state.error}</p>}
+      {state.error && <p className="w-full text-danger">{state.error}</p>}
     </form>
   );
 }
