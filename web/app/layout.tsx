@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Suspense } from "react";
 import Account from "./account";
 import "./globals.css";
@@ -6,6 +6,10 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "Wallet activity",
   description: "ERC-20 transfers of the listed tokens",
+};
+
+export const viewport: Viewport = {
+  colorScheme: "light dark",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
