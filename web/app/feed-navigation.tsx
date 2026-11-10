@@ -44,8 +44,23 @@ export function FeedPending({ children }: { children: React.ReactNode }) {
 
 export type FilterOption = { href: string; label: string; active: boolean };
 
+export function FeedLink({ href, ...props }: React.ComponentProps<typeof Link> & { href: string }) {
+  const { navigate } = useFeedNavigation();
+  return (
+    <Link
+      {...props}
+      href={href}
+      onClick={(event) => {
+        if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+        event.preventDefault();
+        navigate(href);
+      }}
+    />
+  );
+}
+
 export function FilterGroup({ options }: { options: FilterOption[] }) {
-  const { pendingHref, navigate } = useFeedNavigation();
+  const { pendingHref } = useFeedNavigation();
   const pendingInGroup = options.some(({ href }) => href === pendingHref);
 
   return (
@@ -53,19 +68,14 @@ export function FilterGroup({ options }: { options: FilterOption[] }) {
       {options.map(({ href, label, active }) => {
         const shownActive = pendingInGroup ? href === pendingHref : active;
         return (
-          <Link
+          <FeedLink
             key={href}
             href={href}
             aria-current={shownActive ? "true" : undefined}
-            onClick={(event) => {
-              if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
-              event.preventDefault();
-              navigate(href);
-            }}
             className={`rounded border px-2 py-0.5 ${shownActive ? "border-strong font-semibold" : "border-control text-muted"}`}
           >
             {label}
-          </Link>
+          </FeedLink>
         );
       })}
     </div>
