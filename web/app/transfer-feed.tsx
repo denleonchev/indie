@@ -105,7 +105,10 @@ export default async function TransferFeed({ searchParams }: { searchParams: Sea
             </ExportDialog>
           )}
         </div>
-        {!cursor && <NewTransfersBanner showCount={!isOwnWalletFilterApplied && !token} />}
+        <NewTransfersBanner
+          showCount={!isOwnWalletFilterApplied && !token}
+          newestHref={cursor ? feedHref(pageFilters) : undefined}
+        />
         <FeedPending>
           {transfers.length === 0 ? (
             <p className="text-sm text-muted">{emptyText}</p>

@@ -3,11 +3,13 @@
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { useFeedNavigation } from "./feed-navigation";
 
 type Signal = { operation?: string; transfer_count?: number };
 
-export default function NewTransfersBanner({ showCount }: { showCount: boolean }) {
+export default function NewTransfersBanner({ showCount, newestHref }: { showCount: boolean; newestHref?: string }) {
   const router = useRouter();
+  const { navigate } = useFeedNavigation();
   const [newTransferCount, setNewTransferCount] = useState(0);
   const [hasOtherChanges, setHasOtherChanges] = useState(false);
 
@@ -38,7 +40,8 @@ export default function NewTransfersBanner({ showCount }: { showCount: boolean }
   function showNewTransfers() {
     setNewTransferCount(0);
     setHasOtherChanges(false);
-    router.refresh();
+    if (newestHref) navigate(newestHref);
+    else router.refresh();
   }
 
   const label =

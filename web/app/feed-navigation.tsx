@@ -26,8 +26,12 @@ export function FeedNavigationProvider({ children }: { children: React.ReactNode
   return <FeedNavigationContext value={{ pendingHref, navigate }}>{children}</FeedNavigationContext>;
 }
 
+export function useFeedNavigation() {
+  return useContext(FeedNavigationContext);
+}
+
 export function FeedPending({ children }: { children: React.ReactNode }) {
-  const pending = useContext(FeedNavigationContext).pendingHref !== null;
+  const pending = useFeedNavigation().pendingHref !== null;
   return (
     <div
       aria-busy={pending}
@@ -41,7 +45,7 @@ export function FeedPending({ children }: { children: React.ReactNode }) {
 export type FilterOption = { href: string; label: string; active: boolean };
 
 export function FilterGroup({ options }: { options: FilterOption[] }) {
-  const { pendingHref, navigate } = useContext(FeedNavigationContext);
+  const { pendingHref, navigate } = useFeedNavigation();
   const pendingInGroup = options.some(({ href }) => href === pendingHref);
 
   return (
