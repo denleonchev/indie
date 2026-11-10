@@ -11,6 +11,7 @@ import ExportDialog from "./export-dialog";
 import ExportForm from "./export-form";
 import ExportList from "./export-list";
 import FeedFilters from "./feed-filters";
+import { FeedNavigationProvider, FeedPending } from "./feed-navigation";
 import NewTransfersBanner from "./new-transfers-banner";
 import RefreshOnSignal from "./refresh-on-signal";
 import TransferList from "./transfer-list";
@@ -77,56 +78,66 @@ export default async function TransferFeed({ searchParams }: { searchParams: Sea
         .join(" ");
 
   return (
-    <div className="flex flex-col gap-4">
-      <div className="flex flex-wrap items-start gap-x-6 gap-y-2 text-sm">
-        <FeedFilters
-          signedIn={signedInWallet !== null}
-          tokens={tokens}
-          isOwnWalletFilterApplied={isOwnWalletFilterApplied}
-          token={token}
+    <FeedNavigationProvider>
+      <div className="flex flex-col gap-4">
+        <div className="flex flex-wrap items-start gap-x-6 gap-y-2 text-sm">
+          <FeedFilters
+            signedIn={signedInWallet !== null}
+            tokens={tokens}
+            isOwnWalletFilterApplied={isOwnWalletFilterApplied}
+            token={token}
+          />
+          {signedInWallet && (
+            <ExportDialog hasPendingExport={exports?.some(({ status }) => status === "pending") ?? false}>
+              <RefreshOnSignal channel={`exports:${signedInWallet}`} />
+              <ExportForm
+                key={token?.address ?? ""}
+                tokens={tokens}
+                defaultFrom={toDay(now - (DEFAULT_EXPORT_DAYS - 1) * DAY_MS)}
+                defaultTo={toDay(now)}
+                defaultToken={token?.address}
+              />
+              {exports ? (
+                <ExportList exports={exports} now={now} />
+              ) : (
+                <p className="text-sm text-danger">Could not load your exports</p>
+              )}
+            </ExportDialog>
+          )}
+        </div>
+        <NewTransfersBanner
+          showCount={!isOwnWalletFilterApplied && !token}
+          newestHref={cursor ? feedHref(pageFilters) : undefined}
         />
-        {signedInWallet && (
-          <ExportDialog hasPendingExport={exports?.some(({ status }) => status === "pending") ?? false}>
-            <RefreshOnSignal channel={`exports:${signedInWallet}`} />
-            <ExportForm
-              key={token?.address ?? ""}
-              tokens={tokens}
-              defaultFrom={toDay(now - (DEFAULT_EXPORT_DAYS - 1) * DAY_MS)}
-              defaultTo={toDay(now)}
-              defaultToken={token?.address}
+        <FeedPending>
+          {transfers.length === 0 ? (
+            <p className="text-sm text-muted">{emptyText}</p>
+          ) : (
+            <TransferList
+              transfers={transfers}
+              wallet={isOwnWalletFilterApplied ? (signedInWallet ?? undefined) : undefined}
+              now={now}
             />
-            {exports ? (
-              <ExportList exports={exports} now={now} />
-            ) : (
-              <p className="text-sm text-danger">Could not load your exports</p>
+          )}
+          <nav aria-label="Feed pages" className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm">
+            {!cursor && transfers.length === FEED_PAGE_SIZE && (
+              <span className="text-muted">Latest {FEED_PAGE_SIZE} transfers</span>
             )}
-          </ExportDialog>
-        )}
+            {cursor && <Link href={feedHref(pageFilters)}>« Newest</Link>}
+            {hasNewer && transfers.length > 0 && (
+              <Link href={feedHref(pageFilters, cursorAt(transfers[0], "after"))}>‹ Newer</Link>
+            )}
+            {hasOlder && (
+              <Link
+                href={feedHref(pageFilters, cursorAt(transfers[transfers.length - 1], "before"))}
+                className="ml-auto"
+              >
+                Older ›
+              </Link>
+            )}
+          </nav>
+        </FeedPending>
       </div>
-      {!cursor && <NewTransfersBanner showCount={!isOwnWalletFilterApplied && !token} />}
-      {transfers.length === 0 ? (
-        <p className="text-sm text-muted">{emptyText}</p>
-      ) : (
-        <TransferList
-          transfers={transfers}
-          wallet={isOwnWalletFilterApplied ? (signedInWallet ?? undefined) : undefined}
-          now={now}
-        />
-      )}
-      <nav aria-label="Feed pages" className="flex flex-wrap items-center gap-x-4 gap-y-2 text-sm">
-        {!cursor && transfers.length === FEED_PAGE_SIZE && (
-          <span className="text-muted">Latest {FEED_PAGE_SIZE} transfers</span>
-        )}
-        {cursor && <Link href={feedHref(pageFilters)}>« Newest</Link>}
-        {hasNewer && transfers.length > 0 && (
-          <Link href={feedHref(pageFilters, cursorAt(transfers[0], "after"))}>‹ Newer</Link>
-        )}
-        {hasOlder && (
-          <Link href={feedHref(pageFilters, cursorAt(transfers[transfers.length - 1], "before"))} className="ml-auto">
-            Older ›
-          </Link>
-        )}
-      </nav>
-    </div>
+    </FeedNavigationProvider>
   );
 }

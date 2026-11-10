@@ -1,18 +1,6 @@
-import Link from "next/link";
 import type { Token } from "@/data/tokens";
 import { feedHref } from "@/lib/feed-url";
-
-function FilterLink({ href, active, children }: { href: string; active: boolean; children: React.ReactNode }) {
-  return (
-    <Link
-      href={href}
-      aria-current={active ? "true" : undefined}
-      className={`rounded border px-2 py-0.5 ${active ? "border-strong font-semibold" : "border-control text-muted"}`}
-    >
-      {children}
-    </Link>
-  );
-}
+import { FilterGroup } from "./feed-navigation";
 
 export default function FeedFilters({
   signedIn,
@@ -31,30 +19,32 @@ export default function FeedFilters({
   return (
     <nav className="flex flex-wrap gap-x-6 gap-y-2">
       {signedIn && (
-        <div className="flex gap-2">
-          <FilterLink href={feedHref({ ownWallet: false, token: token?.address })} active={!isOwnWalletFilterApplied}>
-            All
-          </FilterLink>
-          <FilterLink href={feedHref({ ownWallet: true, token: token?.address })} active={isOwnWalletFilterApplied}>
-            Mine
-          </FilterLink>
-        </div>
+        <FilterGroup
+          options={[
+            {
+              href: feedHref({ ownWallet: false, token: token?.address }),
+              label: "All",
+              active: !isOwnWalletFilterApplied,
+            },
+            {
+              href: feedHref({ ownWallet: true, token: token?.address }),
+              label: "Mine",
+              active: isOwnWalletFilterApplied,
+            },
+          ]}
+        />
       )}
       {showTokenFilter && (
-        <div className="flex flex-wrap gap-2">
-          <FilterLink href={feedHref({ ownWallet: isOwnWalletFilterApplied })} active={!token}>
-            All tokens
-          </FilterLink>
-          {tokens.map(({ address, symbol }) => (
-            <FilterLink
-              key={address}
-              href={feedHref({ ownWallet: isOwnWalletFilterApplied, token: address })}
-              active={token?.address === address}
-            >
-              {symbol}
-            </FilterLink>
-          ))}
-        </div>
+        <FilterGroup
+          options={[
+            { href: feedHref({ ownWallet: isOwnWalletFilterApplied }), label: "All tokens", active: !token },
+            ...tokens.map(({ address, symbol }) => ({
+              href: feedHref({ ownWallet: isOwnWalletFilterApplied, token: address }),
+              label: symbol,
+              active: token?.address === address,
+            })),
+          ]}
+        />
       )}
     </nav>
   );
