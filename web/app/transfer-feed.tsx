@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getSignedInWallet } from "@/data/auth";
 import { getOwnExports, type OwnExport } from "@/data/exports";
@@ -11,7 +10,7 @@ import ExportDialog from "./export-dialog";
 import ExportForm from "./export-form";
 import ExportList from "./export-list";
 import FeedFilters from "./feed-filters";
-import { FeedNavigationProvider, FeedPending } from "./feed-navigation";
+import { FeedLink, FeedNavigationProvider, FeedPending } from "./feed-navigation";
 import NewTransfersBanner from "./new-transfers-banner";
 import RefreshOnSignal from "./refresh-on-signal";
 import TransferList from "./transfer-list";
@@ -123,17 +122,17 @@ export default async function TransferFeed({ searchParams }: { searchParams: Sea
             {!cursor && transfers.length === FEED_PAGE_SIZE && (
               <span className="text-muted">Latest {FEED_PAGE_SIZE} transfers</span>
             )}
-            {cursor && <Link href={feedHref(pageFilters)}>« Newest</Link>}
+            {cursor && <FeedLink href={feedHref(pageFilters)}>« Newest</FeedLink>}
             {hasNewer && transfers.length > 0 && (
-              <Link href={feedHref(pageFilters, cursorAt(transfers[0], "after"))}>‹ Newer</Link>
+              <FeedLink href={feedHref(pageFilters, cursorAt(transfers[0], "after"))}>‹ Newer</FeedLink>
             )}
             {hasOlder && (
-              <Link
+              <FeedLink
                 href={feedHref(pageFilters, cursorAt(transfers[transfers.length - 1], "before"))}
                 className="ml-auto"
               >
                 Older ›
-              </Link>
+              </FeedLink>
             )}
           </nav>
         </FeedPending>
