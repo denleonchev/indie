@@ -1,24 +1,33 @@
-import { createPublicClient, custom, hexToNumber, numberToHex } from "viem";
+import {
+  createPublicClient,
+  custom,
+  type Hex,
+  hexToNumber,
+  numberToHex,
+} from "viem";
 
-type FakeChain = { headBlockNumber: number };
+type FakeRpcClientOptions = { headBlockNumber: number };
 
-function buildBlockHash(blockNumber: number) {
+function buildFakeBlockHash(blockNumber: number) {
   return numberToHex(blockNumber, { size: 32 });
 }
 
-function buildBlockTimestamp(blockNumber: number) {
-  return 1_700_000_000 + blockNumber * 12;
+const FAKE_GENESIS_TIMESTAMP = 1_700_000_000;
+const SECONDS_PER_BLOCK = 12;
+
+function buildFakeBlockTimestamp(blockNumber: number) {
+  return FAKE_GENESIS_TIMESTAMP + blockNumber * SECONDS_PER_BLOCK;
 }
 
-export function createFakeRpcClient(chain: FakeChain) {
-  function getBlockByNumber(blockNumberHex: `0x${string}`) {
+export function createFakeRpcClient(options: FakeRpcClientOptions) {
+  function getBlockByNumber(blockNumberHex: Hex) {
     const blockNumber = hexToNumber(blockNumberHex);
-    if (blockNumber > chain.headBlockNumber) return null;
+    if (blockNumber > options.headBlockNumber) return null;
     return {
       number: blockNumberHex,
-      hash: buildBlockHash(blockNumber),
-      parentHash: buildBlockHash(blockNumber - 1),
-      timestamp: numberToHex(buildBlockTimestamp(blockNumber)),
+      hash: buildFakeBlockHash(blockNumber),
+      parentHash: buildFakeBlockHash(blockNumber - 1),
+      timestamp: numberToHex(buildFakeBlockTimestamp(blockNumber)),
       transactions: [],
     };
   }
@@ -30,7 +39,7 @@ export function createFakeRpcClient(chain: FakeChain) {
         async request({ method, params }) {
           switch (method) {
             case "eth_blockNumber":
-              return numberToHex(chain.headBlockNumber);
+              return numberToHex(options.headBlockNumber);
             case "eth_getBlockByNumber":
               return getBlockByNumber(params[0]);
             case "eth_getLogs":
