@@ -3,7 +3,7 @@ import type { Config } from "./config.ts";
 import type { Store, TransferRow } from "./store.ts";
 import { fetchTransfers } from "./transfers.ts";
 
-export async function syncReplacedBlocks(
+export async function ensureIndexedBlocksAreCanonical(
   store: Store,
   rpcClient: PublicClient,
   { tokenAddresses, rangeSize }: Config,
