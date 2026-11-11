@@ -1,10 +1,16 @@
 import {
+  type Address,
   createPublicClient,
   custom,
   type Hex,
   hexToNumber,
   numberToHex,
 } from "viem";
+import {
+  buildFakeBlock,
+  buildFakeTransferLog,
+  type FakeTransfer,
+} from "./fake-chain.ts";
 
 export class SimulatedRpcError extends Error {
   override name = "SimulatedRpcError";
@@ -12,41 +18,46 @@ export class SimulatedRpcError extends Error {
 
 type FakeRpcClientOptions = {
   headBlockNumber: number;
+  finalizedBlockNumber?: number;
+  transfers?: FakeTransfer[];
   failGetLogsOnNthCall?: number;
 };
 
-function buildFakeBlockHash(blockNumber: number) {
-  return numberToHex(blockNumber, { size: 32 });
-}
-
-const FAKE_GENESIS_TIMESTAMP = 1_700_000_000;
-const SECONDS_PER_BLOCK = 12;
-
-function buildFakeBlockTimestamp(blockNumber: number) {
-  return FAKE_GENESIS_TIMESTAMP + blockNumber * SECONDS_PER_BLOCK;
-}
+type LogFilter = { address: Address[]; fromBlock: Hex; toBlock: Hex };
 
 export function createFakeRpcClient(options: FakeRpcClientOptions) {
-  function getBlockByNumber(blockNumberHex: Hex) {
-    const blockNumber = hexToNumber(blockNumberHex);
+  function findBlockNumber(blockNumberOrTag: Hex | "finalized") {
+    if (blockNumberOrTag !== "finalized") return hexToNumber(blockNumberOrTag);
+    if (options.finalizedBlockNumber === undefined) {
+      throw new Error("finalizedBlockNumber is not set");
+    }
+    return options.finalizedBlockNumber;
+  }
+
+  function getBlockByNumber(blockNumberOrTag: Hex | "finalized") {
+    const blockNumber = findBlockNumber(blockNumberOrTag);
     if (blockNumber > options.headBlockNumber) return null;
-    return {
-      number: blockNumberHex,
-      hash: buildFakeBlockHash(blockNumber),
-      parentHash: buildFakeBlockHash(blockNumber - 1),
-      timestamp: numberToHex(buildFakeBlockTimestamp(blockNumber)),
-      transactions: [],
-    };
+    return buildFakeBlock(blockNumber);
   }
 
   let getLogsCallCount = 0;
 
-  function getLogs() {
+  function getLogs({ address, fromBlock, toBlock }: LogFilter) {
     getLogsCallCount += 1;
     if (getLogsCallCount === options.failGetLogsOnNthCall) {
       throw new SimulatedRpcError("eth_getLogs");
     }
-    return [];
+
+    const fromBlockNumber = hexToNumber(fromBlock);
+    const toBlockNumber = hexToNumber(toBlock);
+    return (options.transfers ?? [])
+      .map((transfer, transferIndex) =>
+        buildFakeTransferLog(transfer, transferIndex, address[0])
+      )
+      .filter((log) => {
+        const blockNumber = hexToNumber(log.blockNumber);
+        return blockNumber >= fromBlockNumber && blockNumber <= toBlockNumber;
+      });
   }
 
   return createPublicClient({
@@ -60,7 +71,7 @@ export function createFakeRpcClient(options: FakeRpcClientOptions) {
             case "eth_getBlockByNumber":
               return getBlockByNumber(params[0]);
             case "eth_getLogs":
-              return getLogs();
+              return getLogs(params[0]);
             default:
               throw new Error(`unexpected RPC: ${method}`);
           }
