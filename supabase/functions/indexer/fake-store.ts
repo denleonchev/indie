@@ -1,0 +1,48 @@
+import type { Store } from "./store.ts";
+
+type FakeState = {
+  position:
+    | { blockNumber: number; blockTime: string; blockHash: string }
+    | null;
+};
+
+function notFaked(name: string) {
+  return () => {
+    throw new Error(`not faked: ${name}`);
+  };
+}
+
+export function createFakeStore(initial: Partial<FakeState> = {}) {
+  const state: FakeState = { position: null, ...initial };
+
+  const store: Store = {
+    findLastIndexedBlockNumber() {
+      return Promise.resolve(state.position?.blockNumber ?? null);
+    },
+
+    saveIndexedRange(
+      _fromBlockNumber,
+      toBlockNumber,
+      toBlockTime,
+      toBlockHash,
+    ) {
+      state.position = {
+        blockNumber: toBlockNumber,
+        blockTime: toBlockTime,
+        blockHash: toBlockHash,
+      };
+      return Promise.resolve();
+    },
+
+    findKnownTokens: notFaked("findKnownTokens"),
+    addToken: notFaked("addToken"),
+    findLastIndexedBlockHash: notFaked("findLastIndexedBlockHash"),
+    addIndexerState: notFaked("addIndexerState"),
+    findRetentionDays: notFaked("findRetentionDays"),
+    takeLease: notFaked("takeLease"),
+    releaseLease: notFaked("releaseLease"),
+    syncUnfinalizedRange: notFaked("syncUnfinalizedRange"),
+  };
+
+  return store;
+}
