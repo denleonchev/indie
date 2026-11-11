@@ -1,3 +1,4 @@
+import { fn } from "@std/expect";
 import type { Store } from "./store.ts";
 
 type FakeState = {
@@ -15,9 +16,30 @@ function notFaked(name: string) {
 export function createFakeStore(initial: Partial<FakeState> = {}) {
   const state: FakeState = { position: null, ...initial };
 
+  const syncUnfinalizedRange: Store["syncUnfinalizedRange"] = (
+    _finalizedBlockNumber,
+    _lastIndexedBlockNumber,
+    _storedBlockHash,
+    chainBlockHash,
+    chainBlockTime,
+  ) => {
+    if (state.position) {
+      state.position = {
+        ...state.position,
+        blockHash: chainBlockHash,
+        blockTime: chainBlockTime,
+      };
+    }
+    return Promise.resolve({ deletedCount: 0, insertedCount: 0 });
+  };
+
   const store: Store = {
     findLastIndexedBlockNumber() {
       return Promise.resolve(state.position?.blockNumber ?? null);
+    },
+
+    findLastIndexedBlockHash() {
+      return Promise.resolve(state.position?.blockHash ?? null);
     },
 
     saveIndexedRange(
@@ -36,12 +58,13 @@ export function createFakeStore(initial: Partial<FakeState> = {}) {
 
     findKnownTokens: notFaked("findKnownTokens"),
     addToken: notFaked("addToken"),
-    findLastIndexedBlockHash: notFaked("findLastIndexedBlockHash"),
     addIndexerState: notFaked("addIndexerState"),
     findRetentionDays: notFaked("findRetentionDays"),
     takeLease: notFaked("takeLease"),
     releaseLease: notFaked("releaseLease"),
-    syncUnfinalizedRange: notFaked("syncUnfinalizedRange"),
+    syncUnfinalizedRange: fn(syncUnfinalizedRange) as Store[
+      "syncUnfinalizedRange"
+    ],
   };
 
   return store;
