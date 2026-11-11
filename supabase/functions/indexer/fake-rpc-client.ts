@@ -6,7 +6,14 @@ import {
   numberToHex,
 } from "viem";
 
-type FakeRpcClientOptions = { headBlockNumber: number };
+export class SimulatedRpcError extends Error {
+  override name = "SimulatedRpcError";
+}
+
+type FakeRpcClientOptions = {
+  headBlockNumber: number;
+  failGetLogsOnNthCall?: number;
+};
 
 function buildFakeBlockHash(blockNumber: number) {
   return numberToHex(blockNumber, { size: 32 });
@@ -32,6 +39,16 @@ export function createFakeRpcClient(options: FakeRpcClientOptions) {
     };
   }
 
+  let getLogsCallCount = 0;
+
+  function getLogs() {
+    getLogsCallCount += 1;
+    if (getLogsCallCount === options.failGetLogsOnNthCall) {
+      throw new SimulatedRpcError("eth_getLogs");
+    }
+    return [];
+  }
+
   return createPublicClient({
     transport: custom(
       {
@@ -43,7 +60,7 @@ export function createFakeRpcClient(options: FakeRpcClientOptions) {
             case "eth_getBlockByNumber":
               return getBlockByNumber(params[0]);
             case "eth_getLogs":
-              return [];
+              return getLogs();
             default:
               throw new Error(`unexpected RPC: ${method}`);
           }
