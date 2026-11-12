@@ -26,6 +26,8 @@ value above the usual reorg depth, and users see only confirmed transfers.
   blocks, because finality has no fixed number of blocks.
 - **Only rows that differ are replaced,** in one transaction with the position.
 - **A mismatch at or below `finalized` stops the pass** and changes nothing.
+  It can also follow downtime longer than finality. Recovery is manual:
+  [runbook](../runbooks/final-block-replaced.md).
 - **Move to option A** if the non-final logs often reach
   `MAX_TRANSFERS_PER_PASS`, or the service keeps derived data such as balances.
 
