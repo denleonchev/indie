@@ -17,3 +17,11 @@ jobs:
         with:
           deno-version: 2.9.6
       - run: deno test --frozen
+
+  db:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: supabase/setup-cli@v3
+      - run: supabase db start
+      - run: supabase test db
