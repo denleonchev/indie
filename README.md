@@ -136,3 +136,5 @@ docs/adr/             decisions
 - [05. Live updates](docs/adr/05-live-updates.md)
 - [06. Export jobs](docs/adr/06-export-jobs.md)
 - [07. Export files](docs/adr/07-export-files.md)
+- [08. Tests](docs/adr/08-tests.md)
+- [09. Indexer pass lock](docs/adr/09-indexer-pass-lock.md)

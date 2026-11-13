@@ -30,8 +30,9 @@ packages with native code are unavailable, and the scheduler and queue are
 platform-specific. Two places to deploy.
 
 Everything A wins is worth nothing here: a minute of delay disappears inside
-the confirmation wait, backfill runs once, and the lock is a few lines. What B
-wins is the one thing the constraints name — nothing to keep alive.
+the confirmation wait, backfill runs once, and the lock is a few lines (see
+[ADR 09](09-indexer-pass-lock.md)). What B wins is the one thing the
+constraints name — nothing to keep alive.
 
 ## Decision
 
