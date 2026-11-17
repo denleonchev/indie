@@ -2,10 +2,12 @@ begin;
 
 create extension if not exists pgtap with schema extensions;
 
-select plan(10);
+select plan(12);
 
 insert into public.tokens (chain_id, address, symbol, decimals)
-values (1, '0x1111111111111111111111111111111111111111', 'TEST', 6);
+values
+  (1, '0x1111111111111111111111111111111111111111', 'TEST', 6),
+  (2, '0x1111111111111111111111111111111111111111', 'TEST', 6);
 
 insert into public.indexer_state (chain_id, last_block, last_block_at, last_block_hash)
 values (1, 110, now() - interval '1 minute', '0x' || repeat('0', 64));
@@ -15,17 +17,19 @@ insert into public.transfers (
   amount, block_number, block_hash, block_time
 )
 select
-  1, '0x' || repeat(tx, 64), 0, '0x1111111111111111111111111111111111111111',
+  chain_id, '0x' || repeat(tx, 64), 0, '0x1111111111111111111111111111111111111111',
   '0x00000000000000000000000000000000000000a1',
   '0x00000000000000000000000000000000000000b2',
   1, block_number, '0x' || repeat(block_hash, 64), now()
 from (
   values
-    ('a', 104, '4'),
-    ('b', 107, '7'),
-    ('c', 108, '8'),
-    ('d', 109, '9')
-) as stored(tx, block_number, block_hash);
+    (1, 'a', 104, '4'),
+    (1, 'b', 107, '7'),
+    (1, 'c', 108, '8'),
+    (1, 'd', 109, '9'),
+    (1, '2', 111, '1'),
+    (2, '1', 108, '8')
+) as stored(chain_id, tx, block_number, block_hash);
 
 create temporary table chain_transfers as
 select
@@ -104,6 +108,16 @@ select is(
 select ok(
   exists (select 1 from public.transfers where chain_id = 1 and tx_hash = '0x' || repeat('e', 64)),
   'inserts a transfer that is new in the chain'
+);
+
+select ok(
+  exists (select 1 from public.transfers where chain_id = 1 and tx_hash = '0x' || repeat('2', 64)),
+  'keeps a transfer above the position block'
+);
+
+select ok(
+  exists (select 1 from public.transfers where chain_id = 2 and tx_hash = '0x' || repeat('1', 64)),
+  'keeps a transfer of another chain'
 );
 
 set local role service_role;
